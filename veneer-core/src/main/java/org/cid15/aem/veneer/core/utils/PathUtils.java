@@ -1,7 +1,7 @@
 package org.cid15.aem.veneer.core.utils;
 
 import org.apache.sling.api.resource.ResourceResolver;
-import org.cid15.aem.veneer.core.constants.PathConstants;
+import org.cid15.aem.veneer.api.constants.PathConstants;
 
 import java.util.regex.Pattern;
 

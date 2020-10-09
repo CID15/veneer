@@ -1,4 +1,4 @@
-package org.cid15.aem.veneer.core.constants;
+package org.cid15.aem.veneer.api.constants;
 
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.dam.api.DamConstants;

@@ -1,4 +1,4 @@
-package org.cid15.aem.veneer.core.constants;
+package org.cid15.aem.veneer.api.constants;
 
 /**
  * Property value constants.

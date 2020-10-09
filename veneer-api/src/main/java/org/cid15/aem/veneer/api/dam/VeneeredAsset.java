@@ -1,15 +1,12 @@
 package org.cid15.aem.veneer.api.dam;
 
-import org.cid15.aem.veneer.api.Replicable;
-import org.cid15.aem.veneer.api.resource.VeneeredResource;
 import com.day.cq.dam.api.Asset;
-
-import java.util.Optional;
+import org.cid15.aem.veneer.api.Replicable;
 
 /**
  * Asset decorator to improve accessibility of metadata.
  */
-public interface VeneeredAsset extends Replicable {
+public interface VeneeredAsset extends AssetContent, Replicable {
 
     /**
      * Get the underlying DAM asset.
@@ -17,11 +14,4 @@ public interface VeneeredAsset extends Replicable {
      * @return asset
      */
     Asset getAsset();
-
-    /**
-     * Get the metadata resource.
-     *
-     * @return metadata resource
-     */
-    Optional<VeneeredResource> getMetadataResource();
 }

@@ -4,11 +4,11 @@ import com.day.cq.dam.api.Asset;
 import com.day.cq.dam.api.DamConstants;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.cid15.aem.veneer.api.constants.PropertyConstants;
 import org.cid15.aem.veneer.api.link.Link;
 import org.cid15.aem.veneer.api.link.builders.LinkBuilder;
 import org.cid15.aem.veneer.api.page.VeneeredPage;
 import org.cid15.aem.veneer.api.page.enums.TitleType;
-import org.cid15.aem.veneer.core.constants.PropertyConstants;
 import org.cid15.aem.veneer.core.link.builders.impl.DefaultLinkBuilder;
 
 import java.util.Optional;
