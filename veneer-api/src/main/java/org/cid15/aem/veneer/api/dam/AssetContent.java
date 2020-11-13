@@ -32,6 +32,16 @@ public interface AssetContent extends Replicable {
     }
 
     /**
+     * Get the resource for the given relative path.
+     *
+     * @return resource
+     */
+    default Optional<VeneeredResource> getContentResource(final String relativePath) {
+        return Optional.ofNullable(getResource().getChild(relativePath))
+            .map(contentResource -> contentResource.adaptTo(VeneeredResource.class));
+    }
+
+    /**
      * Get the metadata resource.
      *
      * @return metadata resource
