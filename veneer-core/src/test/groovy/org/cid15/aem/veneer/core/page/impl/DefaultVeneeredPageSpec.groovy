@@ -172,29 +172,7 @@ class DefaultVeneeredPageSpec extends VeneerSpec {
         def veneeredPage = getVeneeredPage("/content/cid15")
 
         expect:
-        veneeredPage.adaptTo(VeneeredResource).path == "/content/cid15/jcr:content"
-    }
-
-    def "adapt to returns null"() {
-        setup:
-        def veneeredPage = getVeneeredPage("/content/cid15/empty")
-
-        expect:
-        !veneeredPage.adaptTo(VeneeredResource)
-    }
-
-    def "get properites"() {
-        setup:
-        def veneeredPage = getVeneeredPage(path)
-
-        expect:
-        veneeredPage.properties.containsKey(propertyName) == result
-
-        where:
-        path                   | propertyName          | result
-        "/content/cid15"       | "otherPagePath"       | true
-        "/content/cid15"       | "nonExistentProperty" | false
-        "/content/cid15/empty" | "otherPagePath"       | false
+        veneeredPage.adaptTo(VeneeredResource).path == "/content/cid15"
     }
 
     def "get"() {
@@ -397,22 +375,6 @@ class DefaultVeneeredPageSpec extends VeneerSpec {
         veneeredPage.getVeneeredResource("component/one").get().path == "/content/cid15/jcr:content/component/one"
     }
 
-    def "adapt to component resource"() {
-        setup:
-        def veneeredPage = getVeneeredPage("/content/cid15")
-
-        expect:
-        veneeredPage.adaptTo(VeneeredResource).path == "/content/cid15/jcr:content"
-    }
-
-    def "adapt to resource for page with no jcr:content node returns null"() {
-        setup:
-        def veneeredPage = getVeneeredPage("/content/cid15/empty")
-
-        expect:
-        !veneeredPage.adaptTo(VeneeredResource)
-    }
-
     def "get child"() {
         setup:
         def veneeredPage = getVeneeredPage("/content/cid15")
@@ -461,10 +423,16 @@ class DefaultVeneeredPageSpec extends VeneerSpec {
 
     def "get properties"() {
         setup:
-        def veneeredPage = getVeneeredPage("/content/cid15")
+        def veneeredPage = getVeneeredPage(path)
 
         expect:
-        veneeredPage.page.properties.keySet().containsAll(["jcr:title", "otherPagePath"])
+        veneeredPage.properties.containsKey(propertyName) == result
+
+        where:
+        path                   | propertyName          | result
+        "/content/cid15"       | "otherPagePath"       | true
+        "/content/cid15"       | "nonExistentProperty" | false
+        "/content/cid15/empty" | "otherPagePath"       | false
     }
 
     def "get properties for page with no jcr:content node"() {

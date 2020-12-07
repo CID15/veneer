@@ -80,7 +80,7 @@ public final class DefaultVeneeredPage implements VeneeredPage {
         if (type == Page.class) {
             result = (AdapterType) delegate;
         } else if (type == VeneeredResource.class) {
-            result = (AdapterType) getVeneeredResource().orElse(null);
+            result = (AdapterType) delegate.adaptTo(Resource.class).adaptTo(VeneeredResource.class);
         } else {
             result = delegate.adaptTo(type);
         }
