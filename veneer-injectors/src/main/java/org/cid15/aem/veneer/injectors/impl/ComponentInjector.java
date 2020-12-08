@@ -14,7 +14,6 @@ import org.apache.sling.models.spi.DisposalCallbackRegistry;
 import org.apache.sling.models.spi.Injector;
 import org.cid15.aem.veneer.api.Accessible;
 import org.cid15.aem.veneer.api.page.VeneeredPage;
-import org.cid15.aem.veneer.api.page.VeneeredPageManager;
 import org.cid15.aem.veneer.api.resource.VeneeredResource;
 import org.cid15.aem.veneer.injectors.utils.InjectorUtils;
 import org.osgi.service.component.annotations.Component;
@@ -100,7 +99,7 @@ public final class ComponentInjector implements Injector {
             final Page currentPage = Optional.ofNullable(
                 (SlingBindings) request.getAttribute(SlingBindings.class.getName()))
                 .map(bindings -> (Page) bindings.get(WCMBindingsConstants.NAME_CURRENT_PAGE))
-                .orElse(null);
+                .orElse(getCurrentPage(request.getResource()));
 
             if (clazz == VeneeredPage.class) {
                 value = Optional.ofNullable(currentPage)
@@ -116,7 +115,7 @@ public final class ComponentInjector implements Injector {
                 (SlingBindings) request.getAttribute(SlingBindings.class.getName()))
                 .map(bindings -> (Resource) bindings.get(SlingBindings.RESOURCE))
                 .map(resource -> resource.adaptTo(VeneeredResource.class))
-                .orElse(null);
+                .orElse(request.getResource().adaptTo(VeneeredResource.class));
 
             if (clazz == ValueMap.class) {
                 value = Optional.ofNullable(veneeredResource)
@@ -144,14 +143,17 @@ public final class ComponentInjector implements Injector {
         } else if (clazz == VeneeredResource.class) {
             value = resource.adaptTo(VeneeredResource.class);
         } else if (clazz == VeneeredPage.class) {
-            value = resource.getResourceResolver().adaptTo(VeneeredPageManager.class).getContainingVeneeredPage(
-                resource);
+            value = getCurrentPage(resource).adaptTo(VeneeredPage.class);
         } else if (clazz == Page.class) {
-            value = resource.getResourceResolver().adaptTo(PageManager.class).getContainingPage(resource);
+            value = getCurrentPage(resource);
         }
 
         LOG.debug("injecting class : {} with instance : {}", clazz.getName(), value);
 
         return value;
+    }
+
+    private Page getCurrentPage(final Resource resource) {
+        return resource.getResourceResolver().adaptTo(PageManager.class).getContainingPage(resource);
     }
 }
