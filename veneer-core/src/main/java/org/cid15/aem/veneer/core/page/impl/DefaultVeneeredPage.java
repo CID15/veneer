@@ -9,6 +9,7 @@ import com.day.cq.wcm.commons.DeepResourceIterator;
 import com.google.common.base.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.sling.api.adapter.SlingAdaptable;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.cid15.aem.veneer.api.Accessible;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public final class DefaultVeneeredPage implements VeneeredPage {
+public final class DefaultVeneeredPage extends SlingAdaptable implements VeneeredPage {
 
     private static final Filter<Page> ALL_PAGES = page -> true;
 
@@ -82,7 +83,7 @@ public final class DefaultVeneeredPage implements VeneeredPage {
         } else if (type == VeneeredResource.class) {
             result = (AdapterType) delegate.adaptTo(Resource.class).adaptTo(VeneeredResource.class);
         } else {
-            result = delegate.adaptTo(type);
+            result = super.adaptTo(type);
         }
 
         return result;
