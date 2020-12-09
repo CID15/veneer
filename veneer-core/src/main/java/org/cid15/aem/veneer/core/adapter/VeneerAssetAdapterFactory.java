@@ -21,9 +21,9 @@ import java.util.Optional;
     SlingConstants.PROPERTY_ADAPTER_CLASSES + "=org.cid15.aem.veneer.api.dam.VeneeredAsset",
     SlingConstants.PROPERTY_ADAPTER_CLASSES + "=org.cid15.aem.veneer.api.dam.VeneeredContentFragment"
 })
-@ServiceDescription("Veneer DAM Adapter Factory")
+@ServiceDescription("Veneer Asset Adapter Factory")
 @SuppressWarnings("unchecked")
-public final class VeneerDamAdapterFactory implements AdapterFactory {
+public final class VeneerAssetAdapterFactory implements AdapterFactory {
 
     @Override
     public <AdapterType> AdapterType getAdapter(final Object adaptable, final Class<AdapterType> type) {

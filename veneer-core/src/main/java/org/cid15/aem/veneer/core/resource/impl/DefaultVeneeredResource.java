@@ -30,6 +30,7 @@ import org.cid15.aem.veneer.api.resource.VeneeredResource;
 import org.cid15.aem.veneer.core.link.builders.factory.LinkBuilderFactory;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyExistsPredicate;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyValuePredicate;
+import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourceTypePredicate;
 import org.cid15.aem.veneer.core.utils.PathUtils;
 
 import java.util.ArrayList;
@@ -522,8 +523,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public List<VeneeredResource> getVeneeredResources(final String relativePath, final String resourceType) {
-        return getVeneeredResources(relativePath,
-            veneeredResource -> veneeredResource.getResource().isResourceType(resourceType));
+        return getVeneeredResources(relativePath, new VeneeredResourceTypePredicate(resourceType));
     }
 
     @Override

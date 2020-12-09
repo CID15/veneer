@@ -34,6 +34,7 @@ public interface AssetContent extends Replicable {
     /**
      * Get the resource for the given relative path.
      *
+     * @param relativePath path to child resource
      * @return resource
      */
     default Optional<VeneeredResource> getContentResource(final String relativePath) {
