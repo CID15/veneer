@@ -9,10 +9,10 @@ import spock.lang.Shared
 import spock.lang.Unroll
 
 @Unroll
-class VeneerDamAdapterFactorySpec extends VeneerSpec {
+class VeneerAssetAdapterFactorySpec extends VeneerSpec {
 
     @Shared
-    VeneerDamAdapterFactory adapterFactory = new VeneerDamAdapterFactory()
+    VeneerAssetAdapterFactory adapterFactory = new VeneerAssetAdapterFactory()
 
     def setupSpec() {
         nodeBuilder.content {
