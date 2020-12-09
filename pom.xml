@@ -344,7 +344,7 @@
                         <link>http://google.github.io/guava/releases/15.0/api/</link>
                         <link>https://docs.adobe.com/content/docs/en/spec/jsr170/javadocs/jcr-2.0</link>
                         <link>http://sling.apache.org/apidocs/sling11</link>
-                        <link>https://helpx.adobe.com/experience-manager/6-3/sites/developing/using/reference-materials/javadoc/</link>
+                        <link>https://docs.adobe.com/content/help/en/experience-manager-cloud-service-javadoc/</link>
                         <link>http://fasterxml.github.io/jackson-databind/javadoc/2.9/</link>
                     </links>
                     <quiet>true</quiet>
