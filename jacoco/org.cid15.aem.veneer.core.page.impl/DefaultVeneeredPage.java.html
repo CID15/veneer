@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultVeneeredPage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.page.impl</a> &gt; <span class="el_source">DefaultVeneeredPage.java</span></div><h1>DefaultVeneeredPage.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.page.impl;
+
+import com.day.cq.commons.Filter;
+import com.day.cq.replication.ReplicationStatus;
+import com.day.cq.tagging.Tag;
+import com.day.cq.wcm.api.NameConstants;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.commons.DeepResourceIterator;
+import com.google.common.base.Objects;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.sling.api.adapter.SlingAdaptable;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ValueMap;
+import org.cid15.aem.veneer.api.Accessible;
+import org.cid15.aem.veneer.api.Inheritable;
+import org.cid15.aem.veneer.api.link.Link;
+import org.cid15.aem.veneer.api.link.builders.LinkBuilder;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
+import org.cid15.aem.veneer.api.page.VeneeredPageManager;
+import org.cid15.aem.veneer.api.page.enums.TitleType;
+import org.cid15.aem.veneer.api.resource.VeneeredResource;
+import org.cid15.aem.veneer.core.link.builders.factory.LinkBuilderFactory;
+import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyExistsPredicate;
+import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyValuePredicate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+public final class DefaultVeneeredPage extends SlingAdaptable implements VeneeredPage {
+
+<span class="fc" id="L36">    private static final Filter&lt;Page&gt; ALL_PAGES = page -&gt; true;</span>
+
+    private final Page delegate;
+
+    private final Optional&lt;VeneeredResource&gt; veneeredResource;
+
+<span class="fc" id="L42">    public DefaultVeneeredPage(final Page delegate) {</span>
+<span class="fc" id="L43">        this.delegate = delegate;</span>
+
+<span class="fc" id="L45">        veneeredResource = Optional.ofNullable(delegate.getContentResource())</span>
+<span class="fc" id="L46">            .map(resource -&gt; resource.adaptTo(VeneeredResource.class));</span>
+<span class="fc" id="L47">    }</span>
+
+    @Override
+    public boolean equals(final Object other) {
+<span class="nc" id="L51">        return new EqualsBuilder()</span>
+<span class="nc" id="L52">            .append(delegate.getPath(), ((VeneeredPage) other).getPage().getPath())</span>
+<span class="nc" id="L53">            .isEquals();</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L58">        return new HashCodeBuilder()</span>
+<span class="nc" id="L59">            .append(delegate.getPath())</span>
+<span class="nc" id="L60">            .hashCode();</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L65">        return Objects.toStringHelper(this)</span>
+<span class="nc" id="L66">            .add(&quot;path&quot;, delegate.getPath())</span>
+<span class="nc" id="L67">            .add(&quot;title&quot;, delegate.getTitle())</span>
+<span class="nc" id="L68">            .toString();</span>
+    }
+
+    @Override
+    public Page getPage() {
+<span class="fc" id="L73">        return delegate;</span>
+    }
+
+    @Override
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;AdapterType&gt; AdapterType adaptTo(final Class&lt;AdapterType&gt; type) {
+        final AdapterType result;
+
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (type == Page.class) {</span>
+<span class="nc" id="L82">            result = (AdapterType) delegate;</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        } else if (type == VeneeredResource.class) {</span>
+<span class="fc" id="L84">            result = (AdapterType) delegate.adaptTo(Resource.class).adaptTo(VeneeredResource.class);</span>
+<span class="fc" id="L85">        } else {</span>
+<span class="nc" id="L86">            result = super.adaptTo(type);</span>
+        }
+
+<span class="fc" id="L89">        return result;</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredPage&gt; findAncestor(final Predicate&lt;VeneeredPage&gt; predicate) {
+<span class="nc" id="L94">        return findAncestor(predicate, false);</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredPage&gt; findAncestor(final Predicate&lt;VeneeredPage&gt; predicate,
+        final boolean excludeCurrentResource) {
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        VeneeredPage page = excludeCurrentResource ? getParent() : this;</span>
+<span class="fc" id="L101">        VeneeredPage ancestorPage = null;</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        while (page != null) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            if (predicate.test(page)) {</span>
+<span class="fc" id="L105">                ancestorPage = page;</span>
+<span class="fc" id="L106">                break;</span>
+            } else {
+<span class="fc" id="L108">                page = page.getParent();</span>
+            }
+        }
+
+<span class="fc" id="L112">        return Optional.ofNullable(ancestorPage);</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredPage&gt; findAncestorWithProperty(final String propertyName) {
+<span class="nc" id="L117">        return findAncestorForPredicate(new VeneeredResourcePropertyExistsPredicate(propertyName), false);</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredPage&gt; findAncestorWithProperty(final String propertyName,
+        final boolean excludeCurrentResource) {
+<span class="fc" id="L123">        return findAncestorForPredicate(new VeneeredResourcePropertyExistsPredicate(propertyName),</span>
+<span class="fc" id="L124">            excludeCurrentResource);</span>
+    }
+
+    @Override
+    public &lt;V&gt; Optional&lt;VeneeredPage&gt; findAncestorWithPropertyValue(final String propertyName, final V propertyValue) {
+<span class="fc" id="L129">        return findAncestorForPredicate(new VeneeredResourcePropertyValuePredicate&lt;&gt;(propertyName, propertyValue),</span>
+<span class="fc" id="L130">            false);</span>
+    }
+
+    @Override
+    public &lt;V&gt; Optional&lt;VeneeredPage&gt; findAncestorWithPropertyValue(final String propertyName, final V propertyValue,
+        final boolean excludeCurrentResource) {
+<span class="fc" id="L136">        return findAncestorForPredicate(new VeneeredResourcePropertyValuePredicate&lt;&gt;(propertyName, propertyValue),</span>
+<span class="fc" id="L137">            excludeCurrentResource);</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; findDescendants(final Predicate&lt;VeneeredPage&gt; predicate) {
+<span class="fc" id="L142">        final List&lt;VeneeredPage&gt; pages = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L144">        final VeneeredPageManager pageManager = getVeneeredPageManager();</span>
+
+<span class="fc" id="L146">        final Iterator&lt;Page&gt; iterator = delegate.listChildren(ALL_PAGES, true);</span>
+
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
+<span class="fc" id="L149">            final VeneeredPage page = pageManager.getVeneeredPage(iterator.next());</span>
+
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            if (predicate.test(page)) {</span>
+<span class="fc" id="L152">                pages.add(page);</span>
+            }
+        }
+
+<span class="fc" id="L156">        return pages;</span>
+    }
+
+    @Override
+    public ValueMap getProperties() {
+<span class="fc" id="L161">        return getVeneeredResource()</span>
+<span class="fc" id="L162">            .map(Accessible :: getProperties)</span>
+<span class="fc" id="L163">            .orElse(ValueMap.EMPTY);</span>
+    }
+
+    @Override
+    public &lt;T&gt; T get(final String propertyName, final T defaultValue) {
+<span class="fc" id="L168">        return getVeneeredResource()</span>
+<span class="fc" id="L169">            .map(veneeredResource -&gt; veneeredResource.get(propertyName, defaultValue))</span>
+<span class="fc" id="L170">            .orElse(defaultValue);</span>
+    }
+
+    @Override
+    public &lt;T&gt; Optional&lt;T&gt; get(final String propertyName, final Class&lt;T&gt; type) {
+<span class="fc" id="L175">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.get(propertyName, type));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getAsHref(final String propertyName) {
+<span class="fc" id="L180">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsHref(propertyName));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getAsHref(final String propertyName, final boolean strict) {
+<span class="fc" id="L185">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsHref(propertyName, strict));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getAsHref(final String propertyName, final boolean strict, final boolean mapped) {
+<span class="fc" id="L190">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsHref(propertyName, strict,</span>
+<span class="fc" id="L191">            mapped));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getAsHrefInherited(final String propertyName) {
+<span class="nc" id="L196">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsHrefInherited(propertyName));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getAsHrefInherited(final String propertyName, final boolean strict) {
+<span class="nc" id="L201">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsHrefInherited(propertyName,</span>
+<span class="nc" id="L202">            strict));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getAsHrefInherited(final String propertyName, final boolean strict, final boolean mapped) {
+<span class="nc" id="L207">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsHrefInherited(propertyName,</span>
+<span class="nc" id="L208">            strict, mapped));</span>
+    }
+
+    @Override
+    public Optional&lt;Link&gt; getAsLinkInherited(final String propertyName) {
+<span class="nc" id="L213">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsLinkInherited(propertyName));</span>
+    }
+
+    @Override
+    public Optional&lt;Link&gt; getAsLinkInherited(final String propertyName, final boolean strict) {
+<span class="nc" id="L218">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsLinkInherited(propertyName,</span>
+<span class="nc" id="L219">            strict));</span>
+    }
+
+    @Override
+    public Optional&lt;Link&gt; getAsLinkInherited(final String propertyName, final boolean strict, final boolean mapped) {
+<span class="nc" id="L224">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsLinkInherited(propertyName,</span>
+<span class="nc" id="L225">            strict, mapped));</span>
+    }
+
+    @Override
+    public &lt;T&gt; List&lt;T&gt; getAsListInherited(final String propertyName, final Class&lt;T&gt; type) {
+<span class="nc" id="L230">        return getVeneeredResource()</span>
+<span class="nc" id="L231">            .map(veneeredResource -&gt; veneeredResource.getAsListInherited(propertyName, type))</span>
+<span class="nc" id="L232">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredPage&gt; getAsVeneeredPageInherited(final String propertyName) {
+<span class="nc" id="L237">        return getVeneeredResource().flatMap(</span>
+<span class="nc" id="L238">            veneeredResource -&gt; veneeredResource.getAsVeneeredPageInherited(propertyName));</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; getAsVeneeredPageListInherited(final String propertyName) {
+<span class="nc" id="L243">        return getVeneeredResource()</span>
+<span class="nc" id="L244">            .map(veneeredResource -&gt; veneeredResource.getAsVeneeredPageListInherited(propertyName))</span>
+<span class="nc" id="L245">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public Optional&lt;Resource&gt; getAsResourceInherited(final String propertyName) {
+<span class="nc" id="L250">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource</span>
+<span class="nc" id="L251">            .getAsResourceInherited(propertyName));</span>
+    }
+
+    @Override
+    public List&lt;Resource&gt; getAsResourceListInherited(final String propertyName) {
+<span class="nc" id="L256">        return getVeneeredResource()</span>
+<span class="nc" id="L257">            .map(veneeredResource -&gt; veneeredResource.getAsResourceListInherited(propertyName))</span>
+<span class="nc" id="L258">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public &lt;AdapterType&gt; Optional&lt;AdapterType&gt; getAsTypeInherited(final String propertyName,
+        final Class&lt;AdapterType&gt; type) {
+<span class="nc" id="L264">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource</span>
+<span class="nc" id="L265">            .getAsTypeInherited(propertyName, type));</span>
+    }
+
+    @Override
+    public &lt;AdapterType&gt; List&lt;AdapterType&gt; getAsTypeListInherited(final String propertyName,
+        final Class&lt;AdapterType&gt; type) {
+<span class="nc" id="L271">        return getVeneeredResource()</span>
+<span class="nc" id="L272">            .map(veneeredResource -&gt; veneeredResource.getAsTypeListInherited(propertyName, type))</span>
+<span class="nc" id="L273">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public String getTitle() {
+<span class="fc" id="L278">        return delegate.getTitle();</span>
+    }
+
+    @Override
+    public String getDescription() {
+<span class="nc" id="L283">        return delegate.getDescription();</span>
+    }
+
+    @Override
+    public String getName() {
+<span class="fc" id="L288">        return delegate.getName();</span>
+    }
+
+    @Override
+    public String getPath() {
+<span class="fc" id="L293">        return delegate.getPath();</span>
+    }
+
+    @Override
+    public String getHref() {
+<span class="fc" id="L298">        return getHref(false);</span>
+    }
+
+    @Override
+    public String getHref(final boolean mapped) {
+<span class="fc" id="L303">        return getLink(mapped).getHref();</span>
+    }
+
+    @Override
+    public Link getLink() {
+<span class="fc" id="L308">        return getLink(false);</span>
+    }
+
+    @Override
+    public Link getLink(final boolean mapped) {
+<span class="fc" id="L313">        return getLinkBuilder(mapped).build();</span>
+    }
+
+    @Override
+    public LinkBuilder getLinkBuilder() {
+<span class="nc" id="L318">        return getLinkBuilder(false);</span>
+    }
+
+    @Override
+    public LinkBuilder getLinkBuilder(final boolean mapped) {
+<span class="fc" id="L323">        return LinkBuilderFactory.forPage(this, mapped, TitleType.TITLE);</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageReferenceInherited(final boolean isSelf) {
+<span class="nc" id="L328">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource</span>
+<span class="nc" id="L329">            .getImageReferenceInherited(isSelf));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageReferenceInherited() {
+<span class="nc" id="L334">        return getVeneeredResource().flatMap(Inheritable :: getImageReferenceInherited);</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageReferenceInherited(final String name) {
+<span class="nc" id="L339">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getImageReferenceInherited(name));</span>
+    }
+
+    @Override
+    public &lt;T&gt; T getInherited(final String propertyName, final T defaultValue) {
+<span class="nc" id="L344">        return getVeneeredResource()</span>
+<span class="nc" id="L345">            .map(veneeredResource -&gt; veneeredResource.getInherited(propertyName, defaultValue))</span>
+<span class="nc" id="L346">            .orElse(defaultValue);</span>
+    }
+
+    @Override
+    public &lt;T&gt; Optional&lt;T&gt; getInherited(final String propertyName, final Class&lt;T&gt; type) {
+<span class="nc" id="L351">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getInherited(propertyName, type));</span>
+    }
+
+    @Override
+    public List&lt;Tag&gt; getTagsInherited() {
+<span class="nc" id="L356">        return getTagsInherited(NameConstants.PN_TAGS);</span>
+    }
+
+    @Override
+    public List&lt;Tag&gt; getTagsInherited(final String propertyName) {
+<span class="nc" id="L361">        return getVeneeredResource()</span>
+<span class="nc" id="L362">            .map(veneeredResource -&gt; veneeredResource.getTagsInherited(propertyName))</span>
+<span class="nc" id="L363">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredResource&gt; getVeneeredResourceInherited(final String relativePath) {
+<span class="nc" id="L368">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource</span>
+<span class="nc" id="L369">            .getVeneeredResourceInherited(relativePath));</span>
+    }
+
+    @Override
+    public List&lt;VeneeredResource&gt; getVeneeredResourcesInherited() {
+<span class="nc" id="L374">        return getVeneeredResource()</span>
+<span class="nc" id="L375">            .map(Inheritable :: getVeneeredResourcesInherited)</span>
+<span class="nc" id="L376">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public List&lt;VeneeredResource&gt; getVeneeredResourcesInherited(final Predicate&lt;VeneeredResource&gt; predicate) {
+<span class="nc" id="L381">        return getVeneeredResource()</span>
+<span class="nc" id="L382">            .map(veneeredResource -&gt; veneeredResource.getVeneeredResourcesInherited(predicate))</span>
+<span class="nc" id="L383">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public List&lt;VeneeredResource&gt; getVeneeredResourcesInherited(final String relativePath) {
+<span class="nc" id="L388">        return getVeneeredResource()</span>
+<span class="nc" id="L389">            .map(veneeredResource -&gt; veneeredResource.getVeneeredResourcesInherited(relativePath))</span>
+<span class="nc" id="L390">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public List&lt;VeneeredResource&gt; getVeneeredResourcesInherited(final String relativePath,
+        final Predicate&lt;VeneeredResource&gt; predicate) {
+<span class="nc" id="L396">        return getVeneeredResource()</span>
+<span class="nc" id="L397">            .map(veneeredResource -&gt; veneeredResource.getVeneeredResourcesInherited(relativePath, predicate))</span>
+<span class="nc" id="L398">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public Optional&lt;Link&gt; getAsLink(final String propertyName) {
+<span class="nc" id="L403">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsLink(propertyName));</span>
+    }
+
+    @Override
+    public Optional&lt;Link&gt; getAsLink(final String propertyName, final boolean strict) {
+<span class="nc" id="L408">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsLink(propertyName, strict));</span>
+    }
+
+    @Override
+    public Optional&lt;Link&gt; getAsLink(final String propertyName, final boolean strict, final boolean mapped) {
+<span class="nc" id="L413">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource</span>
+<span class="nc" id="L414">            .getAsLink(propertyName, strict, mapped));</span>
+    }
+
+    @Override
+    public &lt;T&gt; List&lt;T&gt; getAsList(final String propertyName, final Class&lt;T&gt; type) {
+<span class="nc" id="L419">        return getVeneeredResource()</span>
+<span class="nc" id="L420">            .map(veneeredResource -&gt; veneeredResource.getAsList(propertyName, type))</span>
+<span class="nc" id="L421">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredPage&gt; getAsVeneeredPage(final String propertyName) {
+<span class="nc" id="L426">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsVeneeredPage(propertyName));</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; getAsVeneeredPageList(final String propertyName) {
+<span class="nc" id="L431">        return getVeneeredResource()</span>
+<span class="nc" id="L432">            .map(veneeredResource -&gt; veneeredResource.getAsVeneeredPageList(propertyName))</span>
+<span class="nc" id="L433">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public Optional&lt;Resource&gt; getAsResource(final String propertyName) {
+<span class="nc" id="L438">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsResource(propertyName));</span>
+    }
+
+    @Override
+    public List&lt;Resource&gt; getAsResourceList(final String propertyName) {
+<span class="nc" id="L443">        return getVeneeredResource()</span>
+<span class="nc" id="L444">            .map(veneeredResource -&gt; veneeredResource.getAsResourceList(propertyName))</span>
+<span class="nc" id="L445">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public &lt;AdapterType&gt; Optional&lt;AdapterType&gt; getAsType(final String propertyName, final Class&lt;AdapterType&gt; type) {
+<span class="nc" id="L450">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getAsType(propertyName, type));</span>
+    }
+
+    @Override
+    public &lt;AdapterType&gt; List&lt;AdapterType&gt; getAsTypeList(final String propertyName, final Class&lt;AdapterType&gt; type) {
+<span class="nc" id="L455">        return getVeneeredResource()</span>
+<span class="nc" id="L456">            .map(veneeredResource -&gt; veneeredResource.getAsTypeList(propertyName, type))</span>
+<span class="nc" id="L457">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageReference(final boolean isSelf) {
+<span class="nc" id="L462">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getImageReference(isSelf));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageReference() {
+<span class="nc" id="L467">        return getVeneeredResource().flatMap(Accessible :: getImageReference);</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageReference(final String name) {
+<span class="nc" id="L472">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getImageReference(name));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageRendition(final String renditionName) {
+<span class="nc" id="L477">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getImageRendition(renditionName));</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getImageRendition(final String name, final String renditionName) {
+<span class="nc" id="L482">        return getVeneeredResource().flatMap(veneeredResource -&gt; veneeredResource.getImageRendition(name,</span>
+<span class="nc" id="L483">            renditionName));</span>
+    }
+
+    @Override
+    public List&lt;Tag&gt; getTags() {
+<span class="nc" id="L488">        return getTags(NameConstants.PN_TAGS);</span>
+    }
+
+    @Override
+    public List&lt;Tag&gt; getTags(final String propertyName) {
+<span class="nc" id="L493">        return getVeneeredResource()</span>
+<span class="nc" id="L494">            .map(veneeredResource -&gt; veneeredResource.getTags(propertyName))</span>
+<span class="nc" id="L495">            .orElse(Collections.emptyList());</span>
+    }
+
+    @Override
+    public boolean isHasImage() {
+<span class="nc" id="L500">        return getVeneeredResource().map(Accessible :: isHasImage).orElse(false);</span>
+    }
+
+    @Override
+    public boolean isHasImage(final String name) {
+<span class="nc" id="L505">        return getVeneeredResource().map(veneeredResource -&gt; veneeredResource.isHasImage(name)).orElse(false);</span>
+    }
+
+    @Override
+    public Iterator&lt;VeneeredPage&gt; listChildren() {
+<span class="fc" id="L510">        return listChildren(page -&gt; true);</span>
+    }
+
+    @Override
+    public Iterator&lt;VeneeredPage&gt; listChildren(final Predicate&lt;VeneeredPage&gt; predicate) {
+<span class="fc" id="L515">        return listChildren(predicate, false);</span>
+    }
+
+    @Override
+    public Iterator&lt;VeneeredPage&gt; listChildren(final Predicate&lt;VeneeredPage&gt; predicate, final boolean deep) {
+<span class="fc" id="L520">        final Resource resource = delegate.adaptTo(Resource.class);</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        final Iterator&lt;Resource&gt; iterator = deep ? new DeepResourceIterator(resource) : resource.listChildren();</span>
+
+<span class="fc" id="L523">        return new VeneeredPageIterator(iterator, predicate);</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredPage&gt; getChild(final String name) {
+<span class="fc" id="L528">        Optional&lt;VeneeredPage&gt; child = Optional.empty();</span>
+
+<span class="pc bpc" id="L530" title="1 of 2 branches missed.">        if (delegate.hasChild(name)) {</span>
+<span class="fc" id="L531">            child = Optional.of(delegate.adaptTo(Resource.class).getChild(name).adaptTo(VeneeredPage.class));</span>
+        }
+
+<span class="fc" id="L534">        return child;</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredResource&gt; getVeneeredResource() {
+<span class="fc" id="L539">        return veneeredResource;</span>
+    }
+
+    @Override
+    public Optional&lt;VeneeredResource&gt; getVeneeredResource(final String relativePath) {
+<span class="fc" id="L544">        return Optional.ofNullable(delegate.getContentResource(relativePath))</span>
+<span class="fc" id="L545">            .map(resource -&gt; resource.adaptTo(VeneeredResource.class));</span>
+    }
+
+    @Override
+    public Link getLink(final TitleType titleType) {
+<span class="fc" id="L550">        return getLinkBuilder(titleType).build();</span>
+    }
+
+    @Override
+    public Link getLink(final TitleType titleType, final boolean mapped) {
+<span class="nc" id="L555">        return getLinkBuilder(titleType, mapped).build();</span>
+    }
+
+    @Override
+    public LinkBuilder getLinkBuilder(final TitleType titleType) {
+<span class="fc" id="L560">        return getLinkBuilder(titleType, false);</span>
+    }
+
+    @Override
+    public LinkBuilder getLinkBuilder(final TitleType titleType, final boolean mapped) {
+<span class="fc" id="L565">        return LinkBuilderFactory.forPage(this, mapped, titleType);</span>
+    }
+
+    @Override
+    public Link getNavigationLink(final boolean isActive) {
+<span class="fc" id="L570">        return getNavigationLink(isActive, false);</span>
+    }
+
+    @Override
+    public Link getNavigationLink(final boolean isActive, final boolean mapped) {
+<span class="fc" id="L575">        return LinkBuilderFactory.forPage(this, mapped, TitleType.NAVIGATION_TITLE)</span>
+<span class="fc" id="L576">            .setActive(isActive)</span>
+<span class="fc" id="L577">            .build();</span>
+    }
+
+    @Override
+    public String getTemplatePath() {
+<span class="fc" id="L582">        return delegate.getProperties().get(NameConstants.NN_TEMPLATE, String.class);</span>
+    }
+
+    @Override
+    public Optional&lt;String&gt; getTitle(final TitleType titleType) {
+<span class="fc" id="L587">        return get(titleType.getPropertyName(), String.class);</span>
+    }
+
+    @Override
+    public VeneeredPage getParent() {
+<span class="fc" id="L592">        return Optional.ofNullable(delegate.getParent())</span>
+<span class="fc" id="L593">            .map(parent -&gt; parent.adaptTo(VeneeredPage.class))</span>
+<span class="fc" id="L594">            .orElse(null);</span>
+    }
+
+    @Override
+    public VeneeredPage getParent(final int level) {
+<span class="fc" id="L599">        return Optional.ofNullable(delegate.getParent(level))</span>
+<span class="fc" id="L600">            .map(parent -&gt; parent.adaptTo(VeneeredPage.class))</span>
+<span class="fc" id="L601">            .orElse(null);</span>
+    }
+
+    @Override
+    public VeneeredPage getAbsoluteParent(final int level) {
+<span class="fc" id="L606">        return Optional.ofNullable(delegate.getAbsoluteParent(level))</span>
+<span class="fc" id="L607">            .map(parent -&gt; parent.adaptTo(VeneeredPage.class))</span>
+<span class="fc" id="L608">            .orElse(null);</span>
+    }
+
+    @Override
+    public VeneeredPageManager getVeneeredPageManager() {
+<span class="fc" id="L613">        return delegate.getContentResource().getResourceResolver().adaptTo(VeneeredPageManager.class);</span>
+    }
+
+    @Override
+    public ReplicationStatus getReplicationStatus() {
+<span class="nc" id="L618">        return delegate.adaptTo(ReplicationStatus.class);</span>
+    }
+
+    // internals
+
+    private Optional&lt;VeneeredPage&gt; findAncestorForPredicate(final Predicate&lt;VeneeredResource&gt; predicate,
+        final boolean excludeCurrentResource) {
+<span class="fc bfc" id="L625" title="All 2 branches covered.">        VeneeredPage page = excludeCurrentResource ? getParent() : this;</span>
+<span class="fc" id="L626">        VeneeredPage ancestorPage = null;</span>
+
+<span class="fc bfc" id="L628" title="All 2 branches covered.">        while (page != null) {</span>
+<span class="fc" id="L629">            final Optional&lt;VeneeredResource&gt; optionalVeneeredResource = page.getVeneeredResource();</span>
+
+<span class="pc bpc" id="L631" title="1 of 4 branches missed.">            if (optionalVeneeredResource.isPresent() &amp;&amp; predicate.test(optionalVeneeredResource.get())) {</span>
+<span class="fc" id="L632">                ancestorPage = page;</span>
+<span class="fc" id="L633">                break;</span>
+            } else {
+<span class="fc" id="L635">                page = page.getParent();</span>
+            }
+        }
+
+<span class="fc" id="L639">        return Optional.ofNullable(ancestorPage);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

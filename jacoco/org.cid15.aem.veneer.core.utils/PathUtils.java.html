@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.utils</a> &gt; <span class="el_source">PathUtils.java</span></div><h1>PathUtils.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.utils;
+
+import org.apache.sling.api.resource.ResourceResolver;
+import org.cid15.aem.veneer.api.constants.PathConstants;
+
+import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.sling.api.resource.Resource.RESOURCE_TYPE_NON_EXISTING;
+
+/**
+ * JCR path utilities.
+ */
+public final class PathUtils {
+
+    /**
+     * Deny outside instantiation.
+     */
+    private PathUtils() {
+
+    }
+
+    /**
+     * Determine if the given path is a valid content path.
+     *
+     * @param path JCR path
+     * @return true if path is a valid content path
+     */
+    public static boolean isContent(final String path) {
+<span class="fc" id="L30">        return Pattern.matches(PathConstants.REGEX_CONTENT, checkNotNull(path));</span>
+    }
+
+    /**
+     * Determine if the given path is external (i.e. not a JCR path).
+     *
+     * @param path JCR path or external URL
+     * @return true if path starts with &quot;/&quot;, false otherwise
+     */
+    public static boolean isExternal(final String path) {
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        return !checkNotNull(path).startsWith(&quot;/&quot;);</span>
+    }
+
+    /**
+     * Determine if the given path is external by verifying that it corresponds to an existing Sling resource.
+     *
+     * @param path JCR path or external URL
+     * @param resourceResolver Sling resource resolver
+     * @return true if path resolves to a valid Sling resource
+     */
+    public static boolean isExternal(final String path, final ResourceResolver resourceResolver) {
+<span class="fc" id="L51">        return RESOURCE_TYPE_NON_EXISTING.equals(checkNotNull(resourceResolver).resolve(checkNotNull(path))</span>
+<span class="fc" id="L52">            .getResourceType());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

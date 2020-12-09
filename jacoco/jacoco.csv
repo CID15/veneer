@@ -1,0 +1,24 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Veneer Core,org.cid15.aem.veneer.core.resource.predicates,VeneeredResourceTypePredicate,0,14,0,0,0,4,0,2,0,2
+Veneer Core,org.cid15.aem.veneer.core.resource.predicates,VeneeredResourcePropertyValuePredicate,0,72,0,2,0,14,0,4,0,3
+Veneer Core,org.cid15.aem.veneer.core.resource.predicates,VeneeredResourcePropertyExistsPredicate,0,15,0,0,0,4,0,2,0,2
+Veneer Core,org.cid15.aem.veneer.core.resource.impl,DefaultVeneeredResource,26,1239,2,54,8,240,5,142,4,115
+Veneer Core,org.cid15.aem.veneer.core.page.impl,VeneeredPageIterator,8,67,2,12,2,16,3,9,1,4
+Veneer Core,org.cid15.aem.veneer.core.page.impl,DefaultVeneeredPage,578,432,4,22,103,93,95,62,91,53
+Veneer Core,org.cid15.aem.veneer.core.page.impl,DefaultVeneeredPageManager,14,245,3,13,3,57,4,18,1,13
+Veneer Core,org.cid15.aem.veneer.core.servlets,AbstractJsonResponseServlet,7,72,0,0,2,20,0,6,0,6
+Veneer Core,org.cid15.aem.veneer.core.link.impl,DefaultLink,73,80,0,0,19,26,5,12,5,12
+Veneer Core,org.cid15.aem.veneer.core.servlets.datasource,AbstractTagDataSourceServlet,0,62,1,3,0,13,1,7,0,6
+Veneer Core,org.cid15.aem.veneer.core.servlets.datasource,AbstractOptionsDataSourceServlet,0,63,0,0,0,15,0,3,0,3
+Veneer Core,org.cid15.aem.veneer.core.components,AbstractComponent,414,0,0,0,81,0,81,0,81,0
+Veneer Core,org.cid15.aem.veneer.core.adapter,VeneerAssetAdapterFactory,6,66,4,8,1,22,3,7,0,4
+Veneer Core,org.cid15.aem.veneer.core.adapter,VeneerPageAdapterFactory,0,51,2,8,0,13,2,6,0,3
+Veneer Core,org.cid15.aem.veneer.core.link.builders.impl,DefaultLinkBuilder,29,500,2,34,5,127,3,44,1,28
+Veneer Core,org.cid15.aem.veneer.core.utils,PathUtils,0,27,0,2,0,4,0,4,0,3
+Veneer Core,org.cid15.aem.veneer.core.servlets.optionsprovider,Option,0,52,0,0,0,14,0,7,0,7
+Veneer Core,org.cid15.aem.veneer.core.servlets.optionsprovider,AbstractOptionsProviderServlet,0,32,0,2,0,9,0,3,0,2
+Veneer Core,org.cid15.aem.veneer.core.dam.impl,DefaultVeneeredContentFragment,0,10,0,0,0,4,0,2,0,2
+Veneer Core,org.cid15.aem.veneer.core.dam.impl,DefaultVeneeredAsset,0,10,0,0,0,4,0,2,0,2
+Veneer Core,org.cid15.aem.veneer.core.dam.impl,AbstractVeneeredAsset,0,12,0,0,0,4,0,2,0,2
+Veneer Core,org.cid15.aem.veneer.core.page.predicates,TemplatePredicate,0,25,0,0,0,9,0,3,0,3
+Veneer Core,org.cid15.aem.veneer.core.link.builders.factory,LinkBuilderFactory,48,116,1,7,7,19,5,12,4,9

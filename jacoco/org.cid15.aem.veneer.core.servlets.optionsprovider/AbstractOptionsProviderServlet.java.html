@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractOptionsProviderServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.servlets.optionsprovider</a> &gt; <span class="el_source">AbstractOptionsProviderServlet.java</span></div><h1>AbstractOptionsProviderServlet.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.servlets.optionsprovider;
+
+import com.google.common.collect.ImmutableMap;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.cid15.aem.veneer.core.servlets.AbstractJsonResponseServlet;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+/**
+ * Base class for providing a list of &quot;options&quot; to a component dialog widget.  An option is simply a text/value pair to
+ * be rendered in a selection box.  The implementing class determines how these options are retrieved from the
+ * repository (or external provider, such as a web service).
+ */
+<span class="fc" id="L19">public abstract class AbstractOptionsProviderServlet extends AbstractJsonResponseServlet {</span>
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Get a list of &quot;options&quot; (text/value pairs) for rendering in an authoring dialog.  Building the list of options is
+     * handled by the implementing class and will vary depending on the requirements for the component dialog calling
+     * this servlet.
+     *
+     * @param request Sling request
+     * @return list of options as determined by the implementing class
+     */
+    protected abstract List&lt;Option&gt; getOptions(final SlingHttpServletRequest request);
+
+    /**
+     * @param request Sling request
+     * @return Optional name of root JSON object containing options
+     */
+    protected abstract Optional&lt;String&gt; getOptionsRoot(final SlingHttpServletRequest request);
+
+    @Override
+    protected final void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+        throws IOException {
+<span class="fc" id="L42">        final List&lt;Option&gt; options = getOptions(request);</span>
+
+<span class="fc" id="L44">        checkNotNull(options, &quot;option list must not be null&quot;);</span>
+
+<span class="fc" id="L46">        final Optional&lt;String&gt; optionsRoot = getOptionsRoot(request);</span>
+
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (optionsRoot.isPresent()) {</span>
+<span class="fc" id="L49">            writeJsonResponse(response, ImmutableMap.of(optionsRoot.get(), options));</span>
+<span class="fc" id="L50">        } else {</span>
+<span class="fc" id="L51">            writeJsonResponse(response, options);</span>
+        }
+<span class="fc" id="L53">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

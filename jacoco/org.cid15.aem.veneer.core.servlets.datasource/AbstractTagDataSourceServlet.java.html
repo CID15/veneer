@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractTagDataSourceServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.servlets.datasource</a> &gt; <span class="el_source">AbstractTagDataSourceServlet.java</span></div><h1>AbstractTagDataSourceServlet.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.servlets.datasource;
+
+import com.day.cq.commons.Filter;
+import com.day.cq.tagging.Tag;
+import com.day.cq.tagging.TagManager;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.cid15.aem.veneer.core.servlets.optionsprovider.Option;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * Extends the AbstractOptionsDataSourceServlet and solely focuses on building options from tags within the repository.
+ * A basic extension is to provide just the namespace of the tags and the servlet will build a list of options from all
+ * direct descendants of that namespace tag. Extending classes may optionally provide a more granular tag path and a
+ * custom filter.
+ */
+<span class="fc" id="L19">abstract class AbstractTagDataSourceServlet extends AbstractOptionsDataSourceServlet {</span>
+
+<span class="fc" id="L21">    private static final Filter&lt;Tag&gt; TAG_FILTER_INCLUDE_ALL = tag -&gt; true;</span>
+
+    @Override
+    protected List&lt;Option&gt; getOptions(final SlingHttpServletRequest request) {
+<span class="fc" id="L25">        final TagManager tagManager = request.getResourceResolver().adaptTo(TagManager.class);</span>
+<span class="fc" id="L26">        final Tag containerTag = tagManager.resolve(getNamespace() + getContainerTagRelativePath());</span>
+
+<span class="fc" id="L28">        final List&lt;Option&gt; options = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (containerTag != null) {</span>
+<span class="fc" id="L31">            final Iterator&lt;Tag&gt; iterator = containerTag.listChildren(getTagFilter());</span>
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">            while (iterator.hasNext()) {</span>
+<span class="fc" id="L34">                final Tag tag = iterator.next();</span>
+
+<span class="fc" id="L36">                options.add(new Option(tag.getTagID(), tag.getTitle()));</span>
+            }
+        }
+
+<span class="fc" id="L40">        return options;</span>
+    }
+
+    /**
+     * The string value of the tag namespace with a colon at the end, e.g. &quot;colors:&quot;. A namespace tag is any tag that is
+     * a direct child of the taxonomy root node (/etc/tags).
+     *
+     * @return the node name of the namespace tag.
+     */
+    protected abstract String getNamespace();
+
+    /**
+     * Override this method to provide the path of the parent tag containing all child tags to be returned by the
+     * servlet. Defaults to an empty string if not overridden, resulting in all child tags directly under the namespace
+     * tag being returned.
+     *
+     * @return the path of the containing tag
+     */
+    protected String getContainerTagRelativePath() {
+<span class="fc" id="L59">        return &quot;&quot;;</span>
+    }
+
+    /**
+     * Override this method to provide a filter for the list of tags returned by the servlet. Defaults to an all
+     * inclusive filter if not overridden.
+     *
+     * @return the tag filter to use when building the list of tags returned by the servlet.
+     */
+    protected Filter&lt;Tag&gt; getTagFilter() {
+<span class="fc" id="L69">        return TAG_FILTER_INCLUDE_ALL;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

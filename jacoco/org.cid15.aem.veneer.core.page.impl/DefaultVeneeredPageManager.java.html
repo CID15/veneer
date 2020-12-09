@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultVeneeredPageManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.page.impl</a> &gt; <span class="el_source">DefaultVeneeredPageManager.java</span></div><h1>DefaultVeneeredPageManager.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.page.impl;
+
+import com.day.cq.commons.RangeIterator;
+import com.day.cq.commons.jcr.JcrConstants;
+import com.day.cq.tagging.TagManager;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
+import com.google.common.base.Stopwatch;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
+import org.cid15.aem.veneer.api.page.VeneeredPageManager;
+import org.cid15.aem.veneer.core.page.predicates.TemplatePredicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.RowIterator;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+public final class DefaultVeneeredPageManager implements VeneeredPageManager {
+
+<span class="fc" id="L34">    private static final Logger LOG = LoggerFactory.getLogger(DefaultVeneeredPageManager.class);</span>
+
+    private final ResourceResolver resourceResolver;
+
+    private final PageManager pageManager;
+
+<span class="fc" id="L40">    public DefaultVeneeredPageManager(final ResourceResolver resourceResolver) {</span>
+<span class="fc" id="L41">        this.resourceResolver = resourceResolver;</span>
+
+<span class="fc" id="L43">        pageManager = resourceResolver.adaptTo(PageManager.class);</span>
+<span class="fc" id="L44">    }</span>
+
+    @Override
+    public PageManager getPageManager() {
+<span class="nc" id="L48">        return pageManager;</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; findVeneeredPages(final String rootPath, final Collection&lt;String&gt; tagIds,
+        final boolean matchOne) {
+<span class="fc" id="L54">        checkNotNull(rootPath);</span>
+<span class="fc" id="L55">        checkNotNull(tagIds);</span>
+
+<span class="fc" id="L57">        LOG.debug(&quot;path : {}, tag IDs : {}&quot;, rootPath, tagIds);</span>
+
+<span class="fc" id="L59">        final Stopwatch stopwatch = Stopwatch.createStarted();</span>
+
+<span class="fc" id="L61">        final RangeIterator&lt;Resource&gt; iterator = resourceResolver.adaptTo(TagManager.class).find(rootPath,</span>
+<span class="fc" id="L62">            tagIds.toArray(new String[0]), matchOne);</span>
+
+<span class="fc" id="L64">        final List&lt;VeneeredPage&gt; pages = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
+<span class="fc" id="L67">            final Resource resource = iterator.next();</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {</span>
+<span class="fc" id="L70">                final VeneeredPage page = getVeneeredPage(resource.getParent().getPath());</span>
+
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">                if (page != null) {</span>
+<span class="fc" id="L73">                    pages.add(page);</span>
+                }
+            }
+        }
+
+<span class="fc" id="L78">        LOG.debug(&quot;found {} result(s) in {}ms&quot;, pages.size(), stopwatch.elapsed(MILLISECONDS));</span>
+
+<span class="fc" id="L80">        return pages;</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; findVeneeredPages(final String rootPath, final String templatePath) {
+<span class="fc" id="L85">        return findVeneeredPages(rootPath, new TemplatePredicate(templatePath));</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; findVeneeredPages(final String rootPath, final Predicate&lt;VeneeredPage&gt; predicate) {
+<span class="fc" id="L90">        final Stopwatch stopwatch = Stopwatch.createStarted();</span>
+
+<span class="fc" id="L92">        final List&lt;VeneeredPage&gt; pages = Optional.ofNullable(getVeneeredPage(checkNotNull(rootPath)))</span>
+<span class="fc" id="L93">            .map(page -&gt; page.findDescendants(predicate))</span>
+<span class="fc" id="L94">            .orElse(Collections.emptyList());</span>
+
+<span class="fc" id="L96">        stopwatch.stop();</span>
+
+<span class="fc" id="L98">        LOG.debug(&quot;found {} result(s) in {}ms&quot;, pages.size(), stopwatch.elapsed(MILLISECONDS));</span>
+
+<span class="fc" id="L100">        return pages;</span>
+    }
+
+    @Override
+    public VeneeredPage getContainingVeneeredPage(final Resource resource) {
+<span class="fc" id="L105">        return getVeneeredPage(pageManager.getContainingPage(resource));</span>
+    }
+
+    @Override
+    public VeneeredPage getContainingVeneeredPage(final String path) {
+<span class="fc" id="L110">        return getVeneeredPage(pageManager.getContainingPage(path));</span>
+    }
+
+    @Override
+    public VeneeredPage getVeneeredPage(final Page page) {
+<span class="fc" id="L115">        return Optional.ofNullable(page)</span>
+<span class="fc" id="L116">            .map(p -&gt; p.adaptTo(VeneeredPage.class))</span>
+<span class="fc" id="L117">            .orElse(null);</span>
+    }
+
+    @Override
+    public VeneeredPage getVeneeredPage(final String path) {
+<span class="fc" id="L122">        return getVeneeredPage(pageManager.getPage(path));</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; search(final Query query) {
+<span class="fc" id="L127">        return search(query, -1);</span>
+    }
+
+    @Override
+    public List&lt;VeneeredPage&gt; search(final Query query, final int limit) {
+<span class="fc" id="L132">        checkNotNull(query);</span>
+
+<span class="fc" id="L134">        LOG.debug(&quot;query statement : {}&quot;, query.getStatement());</span>
+
+<span class="fc" id="L136">        final Stopwatch stopwatch = Stopwatch.createStarted();</span>
+
+<span class="fc" id="L138">        final List&lt;VeneeredPage&gt; pages = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L140">        int count = 0;</span>
+
+        try {
+<span class="fc" id="L143">            final Set&lt;String&gt; paths = new HashSet&lt;&gt;();</span>
+
+<span class="fc" id="L145">            final RowIterator rows = query.execute().getRows();</span>
+
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            while (rows.hasNext()) {</span>
+<span class="fc" id="L148">                final String path = rows.nextRow().getPath();</span>
+
+<span class="fc bfc" id="L150" title="All 4 branches covered.">                if (limit == -1 || count &lt; limit) {</span>
+<span class="fc" id="L151">                    LOG.debug(&quot;result path : {}&quot;, path);</span>
+
+<span class="fc" id="L153">                    final VeneeredPage page = getContainingVeneeredPage(path);</span>
+
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">                    if (page != null) {</span>
+                        // ensure no duplicate pages are added
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">                        if (!paths.contains(page.getPath())) {</span>
+<span class="fc" id="L158">                            paths.add(page.getPath());</span>
+<span class="fc" id="L159">                            pages.add(page);</span>
+<span class="fc" id="L160">                            count++;</span>
+                        }
+<span class="fc" id="L162">                    } else {</span>
+<span class="nc" id="L163">                        LOG.error(&quot;result is null for path : {}&quot;, path);</span>
+                    }
+                }
+            }
+
+<span class="fc" id="L168">            stopwatch.stop();</span>
+
+<span class="fc" id="L170">            LOG.debug(&quot;found {} result(s) in {}ms&quot;, pages.size(), stopwatch.elapsed(MILLISECONDS));</span>
+<span class="pc" id="L171">        } catch (RepositoryException re) {</span>
+<span class="nc" id="L172">            LOG.error(&quot;error finding pages for query : {}&quot;, query.getStatement(), re);</span>
+        }
+
+<span class="fc" id="L175">        return pages;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

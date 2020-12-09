@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractJsonResponseServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.servlets</a> &gt; <span class="el_source">AbstractJsonResponseServlet.java</span></div><h1>AbstractJsonResponseServlet.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.servlets;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.net.MediaType;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+/**
+ * Base servlet for writing a JSON response.
+ */
+<span class="fc" id="L20">public abstract class AbstractJsonResponseServlet extends SlingAllMethodsServlet {</span>
+
+    public static final String DEFAULT_DATE_FORMAT = &quot;MM/dd/yyyy hh:mm aaa z&quot;;
+
+<span class="fc" id="L24">    private static final Logger LOG = LoggerFactory.getLogger(AbstractJsonResponseServlet.class);</span>
+
+<span class="fc" id="L26">    private static final JsonFactory FACTORY = new JsonFactory().disable(Feature.AUTO_CLOSE_TARGET);</span>
+
+<span class="fc" id="L28">    private static final MediaType MEDIA_TYPE = MediaType.JSON_UTF_8;</span>
+
+<span class="fc" id="L30">    private static final String ENCODING = MEDIA_TYPE.charset().get().name();</span>
+
+<span class="fc" id="L32">    private static final String CONTENT_TYPE = MEDIA_TYPE.withoutParameters().toString();</span>
+
+<span class="fc" id="L34">    private static final long serialVersionUID = 1L;</span>
+
+    /**
+     * Write an object to the response as JSON.
+     *
+     * @param response sling response
+     * @param object object to be written as JSON
+     * @throws IOException if error occurs writing JSON response
+     */
+    protected final void writeJsonResponse(final SlingHttpServletResponse response, final Object object)
+        throws IOException {
+<span class="fc" id="L45">        writeJsonResponse(response, object, DEFAULT_DATE_FORMAT, Locale.US);</span>
+<span class="fc" id="L46">    }</span>
+
+    /**
+     * Write an object to the response as JSON.
+     *
+     * @param response sling response
+     * @param object object to be written as JSON
+     * @param dateFormat SimpleDateFormat pattern for formatting Date objects using US locale
+     * @throws IOException if error occurs writing JSON response
+     */
+    protected final void writeJsonResponse(final SlingHttpServletResponse response, final Object object,
+        final String dateFormat) throws IOException {
+<span class="fc" id="L58">        writeJsonResponse(response, object, dateFormat, Locale.US);</span>
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * Write an object to the response as JSON.
+     *
+     * @param response sling response
+     * @param object object to be written as JSON
+     * @param dateFormat SimpleDateFormat pattern for formatting Date objects
+     * @param locale locale for date format
+     * @throws IOException if error occurs writing JSON response
+     */
+    protected final void writeJsonResponse(final SlingHttpServletResponse response, final Object object,
+        final String dateFormat, final Locale locale) throws IOException {
+<span class="fc" id="L72">        final SimpleDateFormat format = new SimpleDateFormat(dateFormat, locale);</span>
+
+<span class="fc" id="L74">        writeJsonResponse(response, new ObjectMapper().setDateFormat(format), object);</span>
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * Write an object to the response as JSON using the given &lt;code&gt;ObjectMapper&lt;/code&gt; instance.
+     *
+     * @param response Sling response
+     * @param mapper object mapper with a custom configuration
+     * @param object object to be written as JSON
+     * @throws IOException if error occurs writing JSON response
+     */
+    protected final void writeJsonResponse(final SlingHttpServletResponse response, final ObjectMapper mapper,
+        final Object object) throws IOException {
+<span class="fc" id="L87">        response.setContentType(CONTENT_TYPE);</span>
+<span class="fc" id="L88">        response.setCharacterEncoding(ENCODING);</span>
+
+        try {
+<span class="fc" id="L91">            final JsonGenerator generator = FACTORY.createGenerator(response.getWriter());</span>
+
+<span class="fc" id="L93">            mapper.writeValue(generator, object);</span>
+<span class="pc" id="L94">        } catch (IOException e) {</span>
+<span class="nc" id="L95">            LOG.error(&quot;error writing JSON response&quot;, e);</span>
+
+<span class="nc" id="L97">            throw e;</span>
+        }
+<span class="fc" id="L99">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

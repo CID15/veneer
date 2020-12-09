@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VeneerAssetAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.adapter</a> &gt; <span class="el_source">VeneerAssetAdapterFactory.java</span></div><h1>VeneerAssetAdapterFactory.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.adapter;
+
+import com.adobe.cq.dam.cfm.ContentFragment;
+import com.day.cq.dam.api.Asset;
+import org.apache.sling.api.SlingConstants;
+import org.apache.sling.api.adapter.AdapterFactory;
+import org.apache.sling.api.resource.Resource;
+import org.cid15.aem.veneer.api.dam.VeneeredAsset;
+import org.cid15.aem.veneer.api.dam.VeneeredContentFragment;
+import org.cid15.aem.veneer.core.dam.impl.DefaultVeneeredAsset;
+import org.cid15.aem.veneer.core.dam.impl.DefaultVeneeredContentFragment;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.propertytypes.ServiceDescription;
+
+import java.util.Optional;
+
+@Component(service = AdapterFactory.class, property = {
+    SlingConstants.PROPERTY_ADAPTABLE_CLASSES + &quot;=org.apache.sling.api.resource.Resource&quot;,
+    SlingConstants.PROPERTY_ADAPTABLE_CLASSES + &quot;=com.day.cq.dam.api.Asset&quot;,
+    SlingConstants.PROPERTY_ADAPTABLE_CLASSES + &quot;=com.adobe.cq.dam.cfm.ContentFragment&quot;,
+    SlingConstants.PROPERTY_ADAPTER_CLASSES + &quot;=org.cid15.aem.veneer.api.dam.VeneeredAsset&quot;,
+    SlingConstants.PROPERTY_ADAPTER_CLASSES + &quot;=org.cid15.aem.veneer.api.dam.VeneeredContentFragment&quot;
+})
+@ServiceDescription(&quot;Veneer Asset Adapter Factory&quot;)
+@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L26">public final class VeneerAssetAdapterFactory implements AdapterFactory {</span>
+
+    @Override
+    public &lt;AdapterType&gt; AdapterType getAdapter(final Object adaptable, final Class&lt;AdapterType&gt; type) {
+<span class="fc" id="L30">        AdapterType result = null;</span>
+
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (type == VeneeredAsset.class) {</span>
+<span class="fc" id="L33">            result = getVeneeredAsset(adaptable);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        } else if (type == VeneeredContentFragment.class) {</span>
+<span class="fc" id="L35">            result = getVeneeredContentFragment(adaptable);</span>
+        }
+
+<span class="fc" id="L38">        return result;</span>
+    }
+
+    private &lt;AdapterType&gt; AdapterType getVeneeredAsset(final Object adaptable) {
+<span class="fc" id="L42">        Asset asset = null;</span>
+
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (adaptable instanceof Resource) {</span>
+<span class="fc" id="L45">            asset = ((Resource) adaptable).adaptTo(Asset.class);</span>
+<span class="pc bnc" id="L46" title="All 2 branches missed.">        } else if (adaptable instanceof Asset) {</span>
+<span class="nc" id="L47">            asset = (Asset) adaptable;</span>
+        }
+
+<span class="fc" id="L50">        return (AdapterType) Optional.ofNullable(asset)</span>
+<span class="fc" id="L51">            .map(DefaultVeneeredAsset :: new)</span>
+<span class="fc" id="L52">            .orElse(null);</span>
+    }
+
+    private &lt;AdapterType&gt; AdapterType getVeneeredContentFragment(final Object adaptable) {
+<span class="fc" id="L56">        ContentFragment contentFragment = null;</span>
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (adaptable instanceof Resource) {</span>
+<span class="fc" id="L59">            contentFragment = ((Resource) adaptable).adaptTo(ContentFragment.class);</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        } else if (adaptable instanceof ContentFragment) {</span>
+<span class="fc" id="L61">            contentFragment = (ContentFragment) adaptable;</span>
+        }
+
+<span class="fc" id="L64">        return (AdapterType) Optional.ofNullable(contentFragment)</span>
+<span class="fc" id="L65">            .map(DefaultVeneeredContentFragment :: new)</span>
+<span class="fc" id="L66">            .orElse(null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

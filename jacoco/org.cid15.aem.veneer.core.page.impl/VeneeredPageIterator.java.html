@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VeneeredPageIterator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.page.impl</a> &gt; <span class="el_source">VeneeredPageIterator.java</span></div><h1>VeneeredPageIterator.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.page.impl;
+
+import org.apache.sling.api.resource.Resource;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.Predicate;
+
+public final class VeneeredPageIterator implements Iterator&lt;VeneeredPage&gt; {
+
+    private VeneeredPage nextPage;
+
+    private final Iterator&lt;Resource&gt; base;
+
+    private final Predicate&lt;VeneeredPage&gt; predicate;
+
+<span class="fc" id="L18">    VeneeredPageIterator(final Iterator&lt;Resource&gt; base, final Predicate&lt;VeneeredPage&gt; predicate) {</span>
+<span class="fc" id="L19">        this.base = base;</span>
+<span class="fc" id="L20">        this.predicate = predicate;</span>
+
+<span class="fc" id="L22">        seek();</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public boolean hasNext() {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        return nextPage != null;</span>
+    }
+
+    @Override
+    public VeneeredPage next() {
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (nextPage != null) {</span>
+<span class="fc" id="L33">            return seek();</span>
+        } else {
+<span class="nc" id="L35">            throw new NoSuchElementException();</span>
+        }
+    }
+
+    @Override
+    public void remove() {
+<span class="nc" id="L41">        throw new UnsupportedOperationException();</span>
+    }
+
+    private VeneeredPage seek() {
+<span class="fc" id="L45">        VeneeredPage prev = nextPage;</span>
+
+<span class="fc" id="L47">        nextPage = null;</span>
+
+<span class="fc bfc" id="L49" title="All 4 branches covered.">        while (base.hasNext() &amp;&amp; nextPage == null) {</span>
+<span class="fc" id="L50">            final Resource resource = base.next();</span>
+
+<span class="fc" id="L52">            nextPage = resource.adaptTo(VeneeredPage.class);</span>
+
+<span class="pc bpc" id="L54" title="1 of 6 branches missed.">            if (nextPage != null &amp;&amp; predicate != null &amp;&amp; !predicate.test(nextPage)) {</span>
+<span class="fc" id="L55">                nextPage = null;</span>
+            }
+        }
+
+<span class="fc" id="L59">        return prev;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VeneerPageAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.adapter</a> &gt; <span class="el_source">VeneerPageAdapterFactory.java</span></div><h1>VeneerPageAdapterFactory.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.adapter;
+
+import com.day.cq.wcm.api.Page;
+import org.apache.sling.api.SlingConstants;
+import org.apache.sling.api.adapter.AdapterFactory;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
+import org.cid15.aem.veneer.api.page.VeneeredPageManager;
+import org.cid15.aem.veneer.core.page.impl.DefaultVeneeredPage;
+import org.cid15.aem.veneer.core.page.impl.DefaultVeneeredPageManager;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.propertytypes.ServiceDescription;
+
+import java.util.Optional;
+
+@Component(service = AdapterFactory.class, property = {
+    SlingConstants.PROPERTY_ADAPTABLE_CLASSES + &quot;=org.apache.sling.api.resource.Resource&quot;,
+    SlingConstants.PROPERTY_ADAPTABLE_CLASSES + &quot;=org.apache.sling.api.resource.ResourceResolver&quot;,
+    SlingConstants.PROPERTY_ADAPTABLE_CLASSES + &quot;=com.day.cq.wcm.api.Page&quot;,
+    SlingConstants.PROPERTY_ADAPTER_CLASSES + &quot;=org.cid15.aem.veneer.api.page.VeneeredPageManager&quot;,
+    SlingConstants.PROPERTY_ADAPTER_CLASSES + &quot;=org.cid15.aem.veneer.api.page.VeneeredPage&quot;
+})
+@ServiceDescription(&quot;Veneer Page Adapter Factory&quot;)
+@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L26">public final class VeneerPageAdapterFactory implements AdapterFactory {</span>
+
+    @Override
+    public &lt;AdapterType&gt; AdapterType getAdapter(final Object adaptable, final Class&lt;AdapterType&gt; type) {
+<span class="fc" id="L30">        AdapterType result = null;</span>
+
+<span class="pc bpc" id="L32" title="1 of 4 branches missed.">        if (type == VeneeredPageManager.class &amp;&amp; adaptable instanceof ResourceResolver) {</span>
+<span class="fc" id="L33">            result = (AdapterType) new DefaultVeneeredPageManager((ResourceResolver) adaptable);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        } else if (type == VeneeredPage.class) {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">            if (adaptable instanceof Resource) {</span>
+<span class="fc" id="L36">                result = getVeneeredPageForResource((Resource) adaptable);</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">            } else if (adaptable instanceof Page) {</span>
+<span class="fc" id="L38">                result = (AdapterType) new DefaultVeneeredPage((Page) adaptable);</span>
+            }
+        }
+
+<span class="fc" id="L42">        return result;</span>
+    }
+
+    private &lt;AdapterType&gt; AdapterType getVeneeredPageForResource(final Resource resource) {
+<span class="fc" id="L46">        return (AdapterType) Optional.ofNullable(resource.adaptTo(Page.class))</span>
+<span class="fc" id="L47">            .map(DefaultVeneeredPage :: new)</span>
+<span class="fc" id="L48">            .orElse(null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
