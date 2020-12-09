@@ -140,7 +140,7 @@ public final class LinkBuilderFactory {
      *
      * @param asset asset
      * @param mapped if true, link path will be mapped through resource resolver
-     * @return
+     * @return builder for given asset path
      */
     public static LinkBuilder forAsset(final Asset asset, final boolean mapped) {
         final Resource assetResource = checkNotNull(asset).adaptTo(Resource.class);

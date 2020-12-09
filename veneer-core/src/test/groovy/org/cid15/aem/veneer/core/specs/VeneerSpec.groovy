@@ -4,7 +4,7 @@ import com.icfolson.aem.prosper.specs.ProsperSpec
 import org.cid15.aem.veneer.api.page.VeneeredPage
 import org.cid15.aem.veneer.api.page.VeneeredPageManager
 import org.cid15.aem.veneer.api.resource.VeneeredResource
-import org.cid15.aem.veneer.core.adapter.VeneerDamAdapterFactory
+import org.cid15.aem.veneer.core.adapter.VeneerAssetAdapterFactory
 import org.cid15.aem.veneer.core.adapter.VeneerPageAdapterFactory
 import org.cid15.aem.veneer.core.resource.impl.DefaultVeneeredResource
 
@@ -15,7 +15,7 @@ abstract class VeneerSpec extends ProsperSpec {
 
     def setupSpec() {
         slingContext.registerAdapterFactory(new VeneerPageAdapterFactory())
-        slingContext.registerAdapterFactory(new VeneerDamAdapterFactory())
+        slingContext.registerAdapterFactory(new VeneerAssetAdapterFactory())
         slingContext.addModelsForClasses(DefaultVeneeredResource)
     }
 
