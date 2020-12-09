@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentInjector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Injectors</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.injectors.impl</a> &gt; <span class="el_source">ComponentInjector.java</span></div><h1>ComponentInjector.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.injectors.impl;
+
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
+import com.day.cq.wcm.api.WCMMode;
+import com.day.cq.wcm.scripting.WCMBindingsConstants;
+import com.google.common.collect.ImmutableList;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.api.scripting.SlingBindings;
+import org.apache.sling.models.spi.DisposalCallbackRegistry;
+import org.apache.sling.models.spi.Injector;
+import org.cid15.aem.veneer.api.Accessible;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
+import org.cid15.aem.veneer.api.resource.VeneeredResource;
+import org.cid15.aem.veneer.injectors.utils.InjectorUtils;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.propertytypes.ServiceRanking;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Injector for objects derived from the current component context.
+ */
+@Component(service = Injector.class)
+@ServiceRanking(Integer.MIN_VALUE)
+<span class="fc" id="L34">public final class ComponentInjector implements Injector {</span>
+
+<span class="fc" id="L36">    private static final Logger LOG = LoggerFactory.getLogger(ComponentInjector.class);</span>
+
+<span class="fc" id="L38">    private static final List&lt;Class&gt; REQUEST_INJECTABLES = ImmutableList.of(</span>
+<span class="fc" id="L39">        Page.class,</span>
+<span class="fc" id="L40">        VeneeredPage.class,</span>
+<span class="fc" id="L41">        VeneeredResource.class,</span>
+<span class="fc" id="L42">        ValueMap.class,</span>
+<span class="fc" id="L43">        WCMMode.class</span>
+    );
+
+<span class="fc" id="L46">    private static final List&lt;Class&gt; RESOURCE_INJECTABLES = ImmutableList.of(</span>
+<span class="fc" id="L47">        ResourceResolver.class,</span>
+<span class="fc" id="L48">        ValueMap.class,</span>
+<span class="fc" id="L49">        VeneeredResource.class,</span>
+<span class="fc" id="L50">        Page.class,</span>
+<span class="fc" id="L51">        VeneeredPage.class</span>
+<span class="fc" id="L52">    );</span>
+
+    @Override
+    public String getName() {
+<span class="fc" id="L56">        return &quot;component&quot;;</span>
+    }
+
+    @Override
+    public Object getValue(final Object adaptable, final String name, final Type type, final AnnotatedElement element,
+        final DisposalCallbackRegistry registry) {
+<span class="fc" id="L62">        Object value = null;</span>
+
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (type instanceof Class) {</span>
+<span class="fc" id="L65">            final Class clazz = (Class) type;</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            if (adaptable instanceof SlingHttpServletRequest) {</span>
+                // get request adaptable
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">                if (REQUEST_INJECTABLES.contains(clazz)) {</span>
+<span class="nc" id="L70">                    value = getValueForRequest(clazz, adaptable);</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">                } else if (RESOURCE_INJECTABLES.contains(clazz)) {</span>
+<span class="nc" id="L72">                    value = getValueForResource(clazz, adaptable);</span>
+<span class="nc" id="L73">                } else {</span>
+<span class="fc" id="L74">                    LOG.debug(&quot;class : {} is not supported by this injector for request&quot;, clazz.getName());</span>
+                }
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">            } else if (adaptable instanceof Resource) {</span>
+                // get resource adaptable
+<span class="fc bfc" id="L78" title="All 2 branches covered.">                if (RESOURCE_INJECTABLES.contains(clazz)) {</span>
+<span class="fc" id="L79">                    value = getValueForResource(clazz, adaptable);</span>
+<span class="fc" id="L80">                } else {</span>
+<span class="fc" id="L81">                    LOG.debug(&quot;class : {} is not supported by this injector for resource&quot;, clazz.getName());</span>
+                }
+            }
+        }
+
+<span class="fc" id="L86">        return value;</span>
+    }
+
+    private Object getValueForRequest(final Class clazz, final Object adaptable) {
+<span class="nc" id="L90">        final SlingHttpServletRequest request = InjectorUtils.getRequest(adaptable);</span>
+
+<span class="nc" id="L92">        Object value = null;</span>
+
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (clazz == WCMMode.class) {</span>
+<span class="nc" id="L95">            value = WCMMode.fromRequest(request);</span>
+<span class="nc bnc" id="L96" title="All 4 branches missed.">        } else if (clazz == VeneeredPage.class || clazz == Page.class) {</span>
+            // get currentPage from sling bindings to ensure that the resource of the rendering page is used for
+            // structural components on editable templates
+<span class="nc" id="L99">            final Page currentPage = Optional.ofNullable(</span>
+<span class="nc" id="L100">                (SlingBindings) request.getAttribute(SlingBindings.class.getName()))</span>
+<span class="nc" id="L101">                .map(bindings -&gt; (Page) bindings.get(WCMBindingsConstants.NAME_CURRENT_PAGE))</span>
+<span class="nc" id="L102">                .orElse(getCurrentPage(request.getResource()));</span>
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">            if (clazz == VeneeredPage.class) {</span>
+<span class="nc" id="L105">                value = Optional.ofNullable(currentPage)</span>
+<span class="nc" id="L106">                    .map(page -&gt; page.adaptTo(VeneeredPage.class))</span>
+<span class="nc" id="L107">                    .orElse(null);</span>
+<span class="nc" id="L108">            } else {</span>
+<span class="nc" id="L109">                value = currentPage;</span>
+            }
+<span class="nc bnc" id="L111" title="All 4 branches missed.">        } else if (clazz == VeneeredResource.class || clazz == ValueMap.class) {</span>
+            // get resource from sling bindings to ensure that the resource of the rendering page is used for
+            // structural components on editable templates
+<span class="nc" id="L114">            final VeneeredResource veneeredResource = Optional.ofNullable(</span>
+<span class="nc" id="L115">                (SlingBindings) request.getAttribute(SlingBindings.class.getName()))</span>
+<span class="nc" id="L116">                .map(bindings -&gt; (Resource) bindings.get(SlingBindings.RESOURCE))</span>
+<span class="nc" id="L117">                .map(resource -&gt; resource.adaptTo(VeneeredResource.class))</span>
+<span class="nc" id="L118">                .orElse(request.getResource().adaptTo(VeneeredResource.class));</span>
+
+<span class="nc bnc" id="L120" title="All 2 branches missed.">            if (clazz == ValueMap.class) {</span>
+<span class="nc" id="L121">                value = Optional.ofNullable(veneeredResource)</span>
+<span class="nc" id="L122">                    .map(Accessible :: getProperties)</span>
+<span class="nc" id="L123">                    .orElse(null);</span>
+<span class="nc" id="L124">            } else {</span>
+<span class="nc" id="L125">                value = veneeredResource;</span>
+            }
+        }
+
+<span class="nc" id="L129">        LOG.debug(&quot;injecting class : {} with instance : {}&quot;, clazz.getName(), value);</span>
+
+<span class="nc" id="L131">        return value;</span>
+    }
+
+    private Object getValueForResource(final Class clazz, final Object adaptable) {
+<span class="fc" id="L135">        final Resource resource = InjectorUtils.getResource(adaptable);</span>
+
+<span class="fc" id="L137">        Object value = null;</span>
+
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        if (clazz == ResourceResolver.class) {</span>
+<span class="fc" id="L140">            value = resource.getResourceResolver();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        } else if (clazz == ValueMap.class) {</span>
+<span class="fc" id="L142">            value = resource.getValueMap();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        } else if (clazz == VeneeredResource.class) {</span>
+<span class="fc" id="L144">            value = resource.adaptTo(VeneeredResource.class);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        } else if (clazz == VeneeredPage.class) {</span>
+<span class="fc" id="L146">            value = getCurrentPage(resource).adaptTo(VeneeredPage.class);</span>
+<span class="pc bnc" id="L147" title="All 2 branches missed.">        } else if (clazz == Page.class) {</span>
+<span class="nc" id="L148">            value = getCurrentPage(resource);</span>
+        }
+
+<span class="fc" id="L151">        LOG.debug(&quot;injecting class : {} with instance : {}&quot;, clazz.getName(), value);</span>
+
+<span class="fc" id="L153">        return value;</span>
+    }
+
+    private Page getCurrentPage(final Resource resource) {
+<span class="fc" id="L157">        return resource.getResourceResolver().adaptTo(PageManager.class).getContainingPage(resource);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TagInjector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Injectors</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.injectors.impl</a> &gt; <span class="el_source">TagInjector.java</span></div><h1>TagInjector.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.injectors.impl;
+
+import com.day.cq.tagging.Tag;
+import com.day.cq.tagging.TagManager;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.spi.AcceptsNullName;
+import org.apache.sling.models.spi.DisposalCallbackRegistry;
+import org.apache.sling.models.spi.Injector;
+import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory2;
+import org.cid15.aem.veneer.api.resource.VeneeredResource;
+import org.cid15.aem.veneer.injectors.annotations.TagInject;
+import org.cid15.aem.veneer.injectors.utils.InjectorUtils;
+import org.osgi.service.component.annotations.Component;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Component(service = Injector.class)
+<span class="fc" id="L24">public final class TagInjector extends AbstractVeneeredResourceInjector implements InjectAnnotationProcessorFactory2,</span>
+    AcceptsNullName {
+
+    @Override
+    public Object getValue(final VeneeredResource veneeredResource, final String name, final Type declaredType,
+        final AnnotatedElement element, final DisposalCallbackRegistry callbackRegistry) {
+<span class="fc" id="L30">        final TagInject annotation = element.getAnnotation(TagInject.class);</span>
+
+<span class="fc" id="L32">        final Class declaredClass = InjectorUtils.getDeclaredClassForDeclaredType(declaredType);</span>
+
+<span class="fc" id="L34">        Object value = null;</span>
+
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (declaredClass == Tag.class) {</span>
+<span class="fc" id="L37">            final TagManager tagManager = veneeredResource.getResource().getResourceResolver().adaptTo(</span>
+<span class="fc" id="L38">                TagManager.class);</span>
+
+<span class="pc bpc" id="L40" title="1 of 4 branches missed.">            final List&lt;String&gt; tagIds = annotation != null &amp;&amp; annotation.inherit() ?</span>
+<span class="fc" id="L41">                veneeredResource.getAsListInherited(name, String.class) :</span>
+<span class="fc" id="L42">                veneeredResource.getAsList(name, String.class);</span>
+
+<span class="fc" id="L44">            final List&lt;Tag&gt; tags = tagIds</span>
+<span class="fc" id="L45">                .stream()</span>
+<span class="fc" id="L46">                .map(tagManager :: resolve)</span>
+<span class="fc" id="L47">                .filter(Objects :: nonNull)</span>
+<span class="fc" id="L48">                .collect(Collectors.toList());</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if (!tags.isEmpty()) {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">                value = InjectorUtils.isDeclaredTypeCollection(declaredType) ? tags : tags.get(0);</span>
+            }
+        }
+
+<span class="fc" id="L55">        return value;</span>
+    }
+
+    @Override
+    public InjectAnnotationProcessor2 createAnnotationProcessor(final Object adaptable,
+        final AnnotatedElement element) {
+<span class="nc" id="L61">        final TagInject annotation = element.getAnnotation(TagInject.class);</span>
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        return annotation != null ? new TagAnnotationProcessor(annotation) : null;</span>
+    }
+
+    @Override
+    public String getName() {
+<span class="fc" id="L68">        return TagInject.NAME;</span>
+    }
+
+    static class TagAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+
+        private final TagInject annotation;
+
+<span class="nc" id="L75">        TagAnnotationProcessor(final TagInject annotation) {</span>
+<span class="nc" id="L76">            this.annotation = annotation;</span>
+<span class="nc" id="L77">        }</span>
+
+        @Override
+        public InjectionStrategy getInjectionStrategy() {
+<span class="nc" id="L81">            return annotation.injectionStrategy();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

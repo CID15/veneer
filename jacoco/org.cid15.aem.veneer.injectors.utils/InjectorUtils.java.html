@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InjectorUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Injectors</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.injectors.utils</a> &gt; <span class="el_source">InjectorUtils.java</span></div><h1>InjectorUtils.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.injectors.utils;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.resource.Resource;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+
+public final class InjectorUtils {
+
+    public static SlingHttpServletRequest getRequest(final Object adaptable) {
+<span class="fc" id="L14">        SlingHttpServletRequest request = null;</span>
+
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (adaptable instanceof SlingHttpServletRequest) {</span>
+<span class="fc" id="L17">            request = (SlingHttpServletRequest) adaptable;</span>
+        }
+
+<span class="fc" id="L20">        return request;</span>
+    }
+
+    public static Resource getResource(final Object adaptable) {
+<span class="fc" id="L24">        Resource resource = null;</span>
+
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (adaptable instanceof Resource) {</span>
+<span class="fc" id="L27">            resource = (Resource) adaptable;</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        } else if (adaptable instanceof SlingHttpServletRequest) {</span>
+<span class="fc" id="L29">            resource = ((SlingHttpServletRequest) adaptable).getResource();</span>
+        }
+
+<span class="fc" id="L32">        return resource;</span>
+    }
+
+    public static boolean isParameterizedListType(final Type declaredType) {
+<span class="fc" id="L36">        final boolean isParameterizedType = declaredType instanceof ParameterizedType;</span>
+
+<span class="pc bpc" id="L38" title="1 of 4 branches missed.">        return isParameterizedType &amp;&amp; ((ParameterizedType) declaredType).getRawType() == List.class;</span>
+    }
+
+    public static boolean isDeclaredTypeCollection(final Type declaredType) {
+<span class="fc" id="L42">        boolean result = false;</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (declaredType instanceof ParameterizedType) {</span>
+<span class="fc" id="L45">            final ParameterizedType parameterizedType = (ParameterizedType) declaredType;</span>
+<span class="fc" id="L46">            final Class collectionType = (Class) parameterizedType.getRawType();</span>
+
+<span class="fc" id="L48">            result = Collection.class.isAssignableFrom(collectionType);</span>
+        }
+
+<span class="fc" id="L51">        return result;</span>
+    }
+
+    public static Class&lt;?&gt; getDeclaredClassForDeclaredType(final Type declaredType) {
+        Class&lt;?&gt; clazz;
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (isDeclaredTypeCollection(declaredType)) {</span>
+<span class="fc" id="L58">            clazz = (Class) ((ParameterizedType) declaredType).getActualTypeArguments()[0];</span>
+<span class="fc" id="L59">        } else {</span>
+<span class="fc" id="L60">            clazz = (Class) declaredType;</span>
+        }
+
+<span class="fc" id="L63">        return clazz;</span>
+    }
+
+    public static Class&lt;?&gt; getActualType(final ParameterizedType declaredType) {
+<span class="fc" id="L67">        final Type[] types = declaredType.getActualTypeArguments();</span>
+
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        return types != null ? (Class&lt;?&gt;) types[0] : null;</span>
+    }
+
+    private InjectorUtils() {
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

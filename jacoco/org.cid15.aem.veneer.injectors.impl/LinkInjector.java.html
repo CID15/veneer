@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinkInjector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Injectors</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.injectors.impl</a> &gt; <span class="el_source">LinkInjector.java</span></div><h1>LinkInjector.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.injectors.impl;
+
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.spi.AcceptsNullName;
+import org.apache.sling.models.spi.DisposalCallbackRegistry;
+import org.apache.sling.models.spi.Injector;
+import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory2;
+import org.cid15.aem.veneer.api.link.Link;
+import org.cid15.aem.veneer.api.resource.VeneeredResource;
+import org.cid15.aem.veneer.core.link.builders.factory.LinkBuilderFactory;
+import org.cid15.aem.veneer.injectors.annotations.LinkInject;
+import org.osgi.service.component.annotations.Component;
+
+import java.lang.reflect.AnnotatedElement;
+
+@Component(service = Injector.class)
+<span class="fc" id="L19">public final class LinkInjector extends AbstractTypedVeneeredResourceInjector&lt;Link&gt; implements Injector,</span>
+    InjectAnnotationProcessorFactory2, AcceptsNullName {
+
+    @Override
+    public String getName() {
+<span class="fc" id="L24">        return LinkInject.NAME;</span>
+    }
+
+    @Override
+    public Object getVeneeredResourceValue(final VeneeredResource veneeredResource, final String name,
+        final Class&lt;Link&gt; declaredType, final AnnotatedElement element,
+        final DisposalCallbackRegistry callbackRegistry) {
+<span class="fc" id="L31">        final LinkInject annotation = element.getAnnotation(LinkInject.class);</span>
+
+        final Link link;
+
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if (annotation != null) {</span>
+<span class="fc" id="L36">            final String title = getTitle(veneeredResource, annotation);</span>
+
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            link = (annotation.inherit() ? veneeredResource.getInherited(name, String.class) : veneeredResource.get(</span>
+<span class="fc" id="L39">                name, String.class))</span>
+<span class="fc" id="L40">                .map(path -&gt; LinkBuilderFactory.forPath(path).setTitle(title).build())</span>
+<span class="fc" id="L41">                .orElse(null);</span>
+<span class="fc" id="L42">        } else {</span>
+<span class="nc" id="L43">            link = veneeredResource.get(name, String.class).map(path -&gt; LinkBuilderFactory.forPath(path).build())</span>
+<span class="nc" id="L44">                .orElse(null);</span>
+        }
+
+<span class="fc" id="L47">        return link;</span>
+    }
+
+    @Override
+    public InjectAnnotationProcessor2 createAnnotationProcessor(final Object adaptable,
+        final AnnotatedElement element) {
+        // check if the element has the expected annotation
+<span class="nc" id="L54">        final LinkInject annotation = element.getAnnotation(LinkInject.class);</span>
+
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        return annotation != null ? new LinkAnnotationProcessor(annotation) : null;</span>
+    }
+
+    private String getTitle(final VeneeredResource veneeredResource, final LinkInject annotation) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        return annotation.inherit() ? veneeredResource.getInherited(annotation.titleProperty(), &quot;&quot;) :</span>
+<span class="fc" id="L61">            veneeredResource.get(annotation.titleProperty(), &quot;&quot;);</span>
+    }
+
+    static class LinkAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+
+        private final LinkInject annotation;
+
+<span class="nc" id="L68">        LinkAnnotationProcessor(final LinkInject annotation) {</span>
+<span class="nc" id="L69">            this.annotation = annotation;</span>
+<span class="nc" id="L70">        }</span>
+
+        @Override
+        public InjectionStrategy getInjectionStrategy() {
+<span class="nc" id="L74">            return annotation.injectionStrategy();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReferenceInjector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Injectors</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.injectors.impl</a> &gt; <span class="el_source">ReferenceInjector.java</span></div><h1>ReferenceInjector.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.injectors.impl;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.models.annotations.injectorspecific.InjectionStrategy;
+import org.apache.sling.models.spi.DisposalCallbackRegistry;
+import org.apache.sling.models.spi.Injector;
+import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessorFactory2;
+import org.cid15.aem.veneer.api.resource.VeneeredResource;
+import org.cid15.aem.veneer.injectors.annotations.ReferenceInject;
+import org.cid15.aem.veneer.injectors.utils.InjectorUtils;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+@Component(service = Injector.class)
+<span class="fc" id="L24">public final class ReferenceInjector extends AbstractVeneeredResourceInjector</span>
+    implements InjectAnnotationProcessorFactory2 {
+
+<span class="fc" id="L27">    private static final Logger LOG = LoggerFactory.getLogger(ReferenceInjector.class);</span>
+
+    @Override
+    public Object getValue(final VeneeredResource veneeredResource, final String name, final Type declaredType,
+        final AnnotatedElement element, final DisposalCallbackRegistry callbackRegistry) {
+<span class="fc" id="L32">        final ReferenceInject annotation = element.getAnnotation(ReferenceInject.class);</span>
+<span class="fc" id="L33">        Object value = null;</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (annotation != null) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            final List&lt;String&gt; references = annotation.inherit() ? veneeredResource.getAsListInherited(name,</span>
+<span class="fc" id="L37">                String.class) : veneeredResource.getAsList(name, String.class);</span>
+
+<span class="fc" id="L39">            final List&lt;Object&gt; referencedObjects = getReferencedObjects(veneeredResource, declaredType, references);</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            if (!referencedObjects.isEmpty()) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                if (InjectorUtils.isDeclaredTypeCollection(declaredType)) {</span>
+<span class="fc" id="L43">                    value = referencedObjects;</span>
+<span class="fc" id="L44">                } else {</span>
+<span class="fc" id="L45">                    value = referencedObjects.get(0);</span>
+                }
+            }
+        }
+
+<span class="fc" id="L50">        return value;</span>
+    }
+
+    @Override
+    public InjectAnnotationProcessor2 createAnnotationProcessor(final Object adaptable,
+        final AnnotatedElement element) {
+<span class="nc" id="L56">        final ReferenceInject annotation = element.getAnnotation(ReferenceInject.class);</span>
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        return annotation != null ? new ReferenceAnnotationProcessor(annotation) : null;</span>
+    }
+
+    @Override
+    public String getName() {
+<span class="fc" id="L63">        return ReferenceInject.NAME;</span>
+    }
+
+    private List&lt;Object&gt; getReferencedObjects(final VeneeredResource veneeredResource, final Type declaredType,
+        final List&lt;String&gt; references) {
+<span class="fc" id="L68">        final Class&lt;?&gt; declaredClass = InjectorUtils.getDeclaredClassForDeclaredType(declaredType);</span>
+
+<span class="fc" id="L70">        final List&lt;Object&gt; referencedObjects = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L72">        final ResourceResolver resourceResolver = veneeredResource.getResource().getResourceResolver();</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (final String reference : references) {</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">            final Resource referencedResource = reference.startsWith(&quot;/&quot;) ? resourceResolver.getResource(</span>
+<span class="pc" id="L76">                reference) : resourceResolver.getResource(veneeredResource.getResource(), reference);</span>
+
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">            if (referencedResource == null) {</span>
+<span class="nc" id="L79">                LOG.warn(&quot;reference {} did not resolve to an accessible resource&quot;, reference);</span>
+<span class="nc" id="L80">            } else {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">                if (declaredClass != Resource.class) {</span>
+<span class="fc" id="L82">                    final Object adaptedObject = referencedResource.adaptTo(declaredClass);</span>
+
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">                    if (adaptedObject == null) {</span>
+<span class="nc" id="L85">                        LOG.warn(&quot;resource at {} could not be adapted to an instance of {}&quot;,</span>
+<span class="nc" id="L86">                            referencedResource.getPath(), declaredClass.getName());</span>
+<span class="nc" id="L87">                    } else {</span>
+<span class="fc" id="L88">                        referencedObjects.add(adaptedObject);</span>
+                    }
+<span class="fc" id="L90">                } else {</span>
+<span class="fc" id="L91">                    referencedObjects.add(referencedResource);</span>
+                }
+            }
+        }
+
+<span class="fc" id="L96">        return referencedObjects;</span>
+    }
+
+    static class ReferenceAnnotationProcessor extends AbstractInjectAnnotationProcessor2 {
+
+        private final ReferenceInject annotation;
+
+<span class="nc" id="L103">        ReferenceAnnotationProcessor(final ReferenceInject annotation) {</span>
+<span class="nc" id="L104">            this.annotation = annotation;</span>
+<span class="nc" id="L105">        }</span>
+
+        @Override
+        public InjectionStrategy getInjectionStrategy() {
+<span class="nc" id="L109">            return annotation.injectionStrategy();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
