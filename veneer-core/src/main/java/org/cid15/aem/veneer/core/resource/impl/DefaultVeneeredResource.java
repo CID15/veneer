@@ -116,7 +116,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public <AdapterType> Optional<AdapterType> getAsType(final String propertyName, final Class<AdapterType> type) {
-        return getAsTypeOptional(getProperties().get(checkNotNull(propertyName), ""), type);
+        return getAsTypeOptional(getProperties().get(checkNotNull(propertyName), String.class), type);
     }
 
     @Override
@@ -164,7 +164,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public Optional<VeneeredPage> getAsVeneeredPage(final String propertyName) {
-        return getPageOptional(getProperties().get(checkNotNull(propertyName), ""));
+        return getPageOptional(getProperties().get(checkNotNull(propertyName), String.class));
     }
 
     @Override
@@ -177,7 +177,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public Optional<Resource> getAsResource(final String propertyName) {
-        return getAsResourceOptional(getProperties().get(checkNotNull(propertyName), ""));
+        return getAsResourceOptional(getProperties().get(checkNotNull(propertyName), String.class));
     }
 
     @Override
@@ -474,7 +474,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     @Override
     public <AdapterType> Optional<AdapterType> getAsTypeInherited(final String propertyName,
         final Class<AdapterType> type) {
-        return getAsTypeOptional(getProperties().getInherited(checkNotNull(propertyName), ""), type);
+        return getAsTypeOptional(getProperties().getInherited(checkNotNull(propertyName), String.class), type);
     }
 
     @Override
@@ -668,7 +668,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     private Optional<VeneeredPage> getPageOptional(final String path) {
-        return Optional.ofNullable(getPageManager().getVeneeredPage(path));
+        return Optional.ofNullable(path).map(pagePath -> getPageManager().getVeneeredPage(pagePath));
     }
 
     private Optional<VeneeredResource> findAncestorForPredicate(final Predicate<VeneeredResource> predicate,
