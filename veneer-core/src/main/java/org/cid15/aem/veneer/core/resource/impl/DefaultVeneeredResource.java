@@ -612,8 +612,10 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public Optional<VeneeredResource> getParent() {
-        return Optional.ofNullable(resource.getParent()).map(TO_VENEERED_RESOURCE);
+    public VeneeredResource getParent() {
+        return Optional.ofNullable(resource.getParent())
+            .map(parent -> parent.adaptTo(VeneeredResource.class))
+            .orElse(null);
     }
 
     // internals

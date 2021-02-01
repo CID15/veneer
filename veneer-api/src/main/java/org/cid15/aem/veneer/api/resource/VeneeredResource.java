@@ -1,12 +1,12 @@
 package org.cid15.aem.veneer.api.resource;
 
+import org.apache.sling.api.adapter.Adaptable;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.cid15.aem.veneer.api.Accessible;
 import org.cid15.aem.veneer.api.Inheritable;
 import org.cid15.aem.veneer.api.Linkable;
 import org.cid15.aem.veneer.api.Traversable;
-import org.apache.sling.api.adapter.Adaptable;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 
 import java.util.List;
 import java.util.Optional;
@@ -129,5 +129,5 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      *
      * @return parent veneered resource or absent optional if resource has no parent
      */
-    Optional<VeneeredResource> getParent();
+    VeneeredResource getParent();
 }

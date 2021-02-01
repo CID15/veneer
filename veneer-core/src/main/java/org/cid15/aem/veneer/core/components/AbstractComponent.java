@@ -235,7 +235,7 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<VeneeredResource> getParent() {
+    public final VeneeredResource getParent() {
         return veneeredResource.getParent();
     }
 
