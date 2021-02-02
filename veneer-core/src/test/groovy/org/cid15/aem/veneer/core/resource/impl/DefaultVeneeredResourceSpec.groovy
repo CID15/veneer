@@ -179,7 +179,7 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource(path)
 
         expect:
-        veneeredResource.parent.get().path == parentPath
+        veneeredResource.parent.path == parentPath
 
         where:
         path                         | parentPath
@@ -192,6 +192,6 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/")
 
         expect:
-        !veneeredResource.parent.present
+        !veneeredResource.parent
     }
 }
