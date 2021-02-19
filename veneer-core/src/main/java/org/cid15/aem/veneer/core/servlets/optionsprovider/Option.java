@@ -1,5 +1,8 @@
 package org.cid15.aem.veneer.core.servlets.optionsprovider;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -44,5 +47,15 @@ public final class Option {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        return EqualsBuilder.reflectionEquals(this, other);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 }
