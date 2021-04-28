@@ -618,6 +618,13 @@ public final class DefaultVeneeredResource implements VeneeredResource {
             .orElse(null);
     }
 
+    @Override
+    public Optional<VeneeredPage> getContainingPage() {
+        final VeneeredPageManager pageManager = resource.getResourceResolver().adaptTo(VeneeredPageManager.class);
+
+        return Optional.ofNullable(pageManager.getContainingVeneeredPage(resource));
+    }
+
     // internals
 
     private Optional<Resource> getAsResourceOptional(final String path) {
@@ -699,13 +706,12 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
         final StringBuilder builder = new StringBuilder();
 
-        if (resource.getName().equals(JcrConstants.JCR_CONTENT)) {
-            builder.append(relativePath);
-        } else {
+        if (!resource.getName().equals(JcrConstants.JCR_CONTENT)) {
             builder.append(resource.getPath().substring(containingPage.getContentResource().getPath().length() + 1));
             builder.append('/');
-            builder.append(relativePath);
         }
+
+        builder.append(relativePath);
 
         // path relative to jcr:content
         final String resourcePath = builder.toString();

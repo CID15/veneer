@@ -194,4 +194,19 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         expect:
         !veneeredResource.parent
     }
+
+    def "get containing page"() {
+        setup:
+        def veneeredResource = getVeneeredResource(path)
+
+        expect:
+        veneeredResource.containingPage.present == exists
+
+        where:
+        path                               | exists
+        "/content/cid15"                   | true
+        "/content/cid15/jcr:content"       | true
+        "/content/cid15/jcr:content/image" | true
+        "/"                                 | false
+    }
 }

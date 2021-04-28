@@ -240,6 +240,11 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
+    public final Optional<VeneeredPage> getContainingPage() {
+        return veneeredResource.getContainingPage();
+    }
+
+    @Override
     public final Optional<Link> getAsLink(final String propertyName) {
         return veneeredResource.getAsLink(propertyName);
     }

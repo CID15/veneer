@@ -7,6 +7,7 @@ import org.cid15.aem.veneer.api.Accessible;
 import org.cid15.aem.veneer.api.Inheritable;
 import org.cid15.aem.veneer.api.Linkable;
 import org.cid15.aem.veneer.api.Traversable;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
 
 import java.util.List;
 import java.util.Optional;
@@ -130,4 +131,11 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      * @return parent veneered resource or absent optional if resource has no parent
      */
     VeneeredResource getParent();
+
+    /**
+     * Get the page containing this resource.
+     *
+     * @return optional containing page
+     */
+    Optional<VeneeredPage> getContainingPage();
 }
