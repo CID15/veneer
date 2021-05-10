@@ -141,12 +141,12 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     public List<VeneeredPage> findDescendants(final Predicate<VeneeredPage> predicate) {
         final List<VeneeredPage> pages = new ArrayList<>();
 
-        final VeneeredPageManager pageManager = getVeneeredPageManager();
+        final VeneeredPageManager pageManager = getPageManager();
 
         final Iterator<Page> iterator = delegate.listChildren(ALL_PAGES, true);
 
         while (iterator.hasNext()) {
-            final VeneeredPage page = pageManager.getVeneeredPage(iterator.next());
+            final VeneeredPage page = pageManager.getPage(iterator.next());
 
             if (predicate.test(page)) {
                 pages.add(page);
@@ -203,24 +203,24 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     }
 
     @Override
-    public Optional<VeneeredPage> getAsVeneeredPageInherited(final String propertyName) {
-        return getContentResource().flatMap(resource -> resource.getAsVeneeredPageInherited(propertyName));
+    public Optional<VeneeredPage> getAsPageInherited(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsPageInherited(propertyName));
     }
 
     @Override
-    public List<VeneeredPage> getAsVeneeredPageListInherited(final String propertyName) {
+    public List<VeneeredPage> getAsPageListInherited(final String propertyName) {
         return getContentResource()
-            .map(resource -> resource.getAsVeneeredPageListInherited(propertyName))
+            .map(resource -> resource.getAsPageListInherited(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public Optional<Resource> getAsResourceInherited(final String propertyName) {
+    public Optional<VeneeredResource> getAsResourceInherited(final String propertyName) {
         return getContentResource().flatMap(resource -> resource.getAsResourceInherited(propertyName));
     }
 
     @Override
-    public List<Resource> getAsResourceListInherited(final String propertyName) {
+    public List<VeneeredResource> getAsResourceListInherited(final String propertyName) {
         return getContentResource()
             .map(resource -> resource.getAsResourceListInherited(propertyName))
             .orElse(Collections.emptyList());
@@ -315,36 +315,36 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     }
 
     @Override
-    public Optional<VeneeredResource> getVeneeredResourceInherited(final String relativePath) {
-        return getContentResource().flatMap(resource -> resource.getVeneeredResourceInherited(relativePath));
+    public Optional<VeneeredResource> getResourceInherited(final String relativePath) {
+        return getContentResource().flatMap(resource -> resource.getResourceInherited(relativePath));
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited() {
+    public List<VeneeredResource> getResourcesInherited() {
         return getContentResource()
-            .map(Inheritable :: getVeneeredResourcesInherited)
+            .map(Inheritable :: getResourcesInherited)
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final Predicate<VeneeredResource> predicate) {
+    public List<VeneeredResource> getResourcesInherited(final Predicate<VeneeredResource> predicate) {
         return getContentResource()
-            .map(resource -> resource.getVeneeredResourcesInherited(predicate))
+            .map(resource -> resource.getResourcesInherited(predicate))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath) {
+    public List<VeneeredResource> getResourcesInherited(final String relativePath) {
         return getContentResource()
-            .map(resource -> resource.getVeneeredResourcesInherited(relativePath))
+            .map(resource -> resource.getResourcesInherited(relativePath))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath,
+    public List<VeneeredResource> getResourcesInherited(final String relativePath,
         final Predicate<VeneeredResource> predicate) {
         return getContentResource()
-            .map(resource -> resource.getVeneeredResourcesInherited(relativePath, predicate))
+            .map(resource -> resource.getResourcesInherited(relativePath, predicate))
             .orElse(Collections.emptyList());
     }
 
@@ -366,24 +366,24 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     }
 
     @Override
-    public Optional<VeneeredPage> getAsVeneeredPage(final String propertyName) {
-        return getContentResource().flatMap(resource -> resource.getAsVeneeredPage(propertyName));
+    public Optional<VeneeredPage> getAsPage(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsPage(propertyName));
     }
 
     @Override
-    public List<VeneeredPage> getAsVeneeredPageList(final String propertyName) {
+    public List<VeneeredPage> getAsPageList(final String propertyName) {
         return getContentResource()
-            .map(resource -> resource.getAsVeneeredPageList(propertyName))
+            .map(resource -> resource.getAsPageList(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public Optional<Resource> getAsResource(final String propertyName) {
+    public Optional<VeneeredResource> getAsResource(final String propertyName) {
         return getContentResource().flatMap(resource -> resource.getAsResource(propertyName));
     }
 
     @Override
-    public List<Resource> getAsResourceList(final String propertyName) {
+    public List<VeneeredResource> getAsResourceList(final String propertyName) {
         return getContentResource()
             .map(resource -> resource.getAsResourceList(propertyName))
             .orElse(Collections.emptyList());
@@ -537,7 +537,7 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     }
 
     @Override
-    public VeneeredPageManager getVeneeredPageManager() {
+    public VeneeredPageManager getPageManager() {
         return delegate.getContentResource().getResourceResolver().adaptTo(VeneeredPageManager.class);
     }
 

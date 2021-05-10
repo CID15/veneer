@@ -160,8 +160,8 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getAsVeneeredPage("otherPagePath").get().path == "/content/ales/esb"
-        !veneeredResource.getAsVeneeredPage("nonExistentProperty").present
+        veneeredResource.getAsPage("otherPagePath").get().path == "/content/ales/esb"
+        !veneeredResource.getAsPage("nonExistentProperty").present
     }
 
     def "get as page list"() {
@@ -169,7 +169,7 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/content/ales/esb/jcr:content")
 
         expect:
-        veneeredResource.getAsVeneeredPageList(propertyName).size() == size
+        veneeredResource.getAsPageList(propertyName).size() == size
 
         where:
         propertyName          | size

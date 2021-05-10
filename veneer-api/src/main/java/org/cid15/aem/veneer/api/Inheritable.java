@@ -1,7 +1,6 @@
 package org.cid15.aem.veneer.api;
 
 import com.day.cq.tagging.Tag;
-import org.apache.sling.api.resource.Resource;
 import org.cid15.aem.veneer.api.link.Link;
 import org.cid15.aem.veneer.api.link.builders.LinkBuilder;
 import org.cid15.aem.veneer.api.page.VeneeredPage;
@@ -62,7 +61,7 @@ public interface Inheritable {
      * @param propertyName property name
      * @return <code>Optional</code> page for property value
      */
-    Optional<VeneeredPage> getAsVeneeredPageInherited(String propertyName);
+    Optional<VeneeredPage> getAsPageInherited(String propertyName);
 
     /**
      * Get a multi-valued property from the current resource as a list of pages, using inheritance if the value does not
@@ -72,7 +71,7 @@ public interface Inheritable {
      * @return list of pages, or empty list if either the property does not exist or pages do not exist for the property
      * values
      */
-    List<VeneeredPage> getAsVeneeredPageListInherited(String propertyName);
+    List<VeneeredPage> getAsPageListInherited(String propertyName);
 
     /**
      * Get an <code>Optional</code> resource instance for a property on this resource containing the path of another
@@ -82,7 +81,7 @@ public interface Inheritable {
      * @return <code>Optional</code> instance of the resource, or absent if either the property does not exist or
      * does not resolve to a resource
      */
-    Optional<Resource> getAsResourceInherited(String propertyName);
+    Optional<VeneeredResource> getAsResourceInherited(String propertyName);
 
     /**
      * Get a multi-valued property from the current resource as a list of resources, using inheritance if the value does
@@ -92,7 +91,7 @@ public interface Inheritable {
      * @return list of resources, or empty list if either the property does not exist or does resolve to a list of
      * resources
      */
-    List<Resource> getAsResourceListInherited(String propertyName);
+    List<VeneeredResource> getAsResourceListInherited(String propertyName);
 
     /**
      * Get an <code>Optional</code> type instance for a property on this resource containing the path of another
@@ -183,7 +182,7 @@ public interface Inheritable {
      * @return direct child resource if it exists, otherwise the child resource at this relative path for an ancestor
      * page
      */
-    Optional<VeneeredResource> getVeneeredResourceInherited(String relativePath);
+    Optional<VeneeredResource> getResourceInherited(String relativePath);
 
     /**
      * Get the children of the current resource.  If the current resource has no children, inherit from an ancestor
@@ -192,7 +191,7 @@ public interface Inheritable {
      * @return list of resources representing children of the current resource or inherited from an ancestor page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited();
+    List<VeneeredResource> getResourcesInherited();
 
     /**
      * Get the children of the current resource meeting the predicate condition.  If the current resource has no
@@ -202,7 +201,7 @@ public interface Inheritable {
      * @return list of resources representing children of the current resource or inherited from an ancestor page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited(Predicate<VeneeredResource> predicate);
+    List<VeneeredResource> getResourcesInherited(Predicate<VeneeredResource> predicate);
 
     /**
      * Get the children of a resource relative to the current resource. If resource does not exist relative to current
@@ -212,7 +211,7 @@ public interface Inheritable {
      * @return list of resources representing children of the addressed resource or inherited from a parent page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited(String relativePath);
+    List<VeneeredResource> getResourcesInherited(String relativePath);
 
     /**
      * Get the children of a resource relative to the current resource meeting the predicate condition. If resource does
@@ -223,5 +222,5 @@ public interface Inheritable {
      * @return list of resources representing children of the addressed resource or inherited from a parent page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited(String relativePath, Predicate<VeneeredResource> predicate);
+    List<VeneeredResource> getResourcesInherited(String relativePath, Predicate<VeneeredResource> predicate);
 }

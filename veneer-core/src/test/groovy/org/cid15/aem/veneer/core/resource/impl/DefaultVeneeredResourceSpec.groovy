@@ -103,8 +103,8 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getVeneeredResource("whiskey").present
-        !veneeredResource.getVeneeredResource("vodka").present
+        veneeredResource.getResource("whiskey").present
+        !veneeredResource.getResource("vodka").present
     }
 
     def "get component resources"() {
@@ -112,7 +112,7 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource(path)
 
         expect:
-        veneeredResource.veneeredResources.size() == size
+        veneeredResource.resources.size() == size
 
         where:
         path                              | size
@@ -131,7 +131,7 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         }
 
         expect:
-        veneeredResource.getVeneeredResources(predicate).size() == 1
+        veneeredResource.getResources(predicate).size() == 1
     }
 
     def "get component resources at relative path"() {
@@ -139,7 +139,7 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getVeneeredResources(relativePath).size() == size
+        veneeredResource.getResources(relativePath).size() == size
 
         where:
         relativePath | size
@@ -152,7 +152,7 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getVeneeredResources("malort", resourceType).size() == size
+        veneeredResource.getResources("malort", resourceType).size() == size
 
         where:
         resourceType   | size
@@ -171,7 +171,7 @@ class DefaultVeneeredResourceSpec extends AbstractVeneeredResourceSpec {
         }
 
         expect:
-        veneeredResource.getVeneeredResources("parent", predicate).size() == 2
+        veneeredResource.getResources("parent", predicate).size() == 2
     }
 
     def "get parent"() {

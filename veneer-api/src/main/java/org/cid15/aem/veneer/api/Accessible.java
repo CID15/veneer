@@ -1,11 +1,11 @@
 package org.cid15.aem.veneer.api;
 
 import com.day.cq.tagging.Tag;
-import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
 import org.cid15.aem.veneer.api.link.Link;
 import org.cid15.aem.veneer.api.link.builders.LinkBuilder;
 import org.cid15.aem.veneer.api.page.VeneeredPage;
+import org.cid15.aem.veneer.api.resource.VeneeredResource;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +87,7 @@ public interface Accessible {
      * @param propertyName property name
      * @return <code>Optional</code> page for property value
      */
-    Optional<VeneeredPage> getAsVeneeredPage(String propertyName);
+    Optional<VeneeredPage> getAsPage(String propertyName);
 
     /**
      * Get a list of pages from the value of the given property.  Pages will only be returned in the list if the paths
@@ -96,7 +96,7 @@ public interface Accessible {
      * @param propertyName property name
      * @return list of pages for property value
      */
-    List<VeneeredPage> getAsVeneeredPageList(String propertyName);
+    List<VeneeredPage> getAsPageList(String propertyName);
 
     /**
      * Get an <code>Optional</code> resource instance for a property on this resource containing the path of another
@@ -106,7 +106,7 @@ public interface Accessible {
      * @return <code>Optional</code> instance of the resource, or absent if either the property does not exist or
      * does not resolve to a resource
      */
-    Optional<Resource> getAsResource(String propertyName);
+    Optional<VeneeredResource> getAsResource(String propertyName);
 
     /**
      * Get a list of resource instances for a property on this resource containing an array of paths to other
@@ -116,7 +116,7 @@ public interface Accessible {
      * @return list of resources, or empty list if either the property does not exist or the resources for the paths do
      * not resolve
      */
-    List<Resource> getAsResourceList(String propertyName);
+    List<VeneeredResource> getAsResourceList(String propertyName);
 
     /**
      * Get an <code>Optional</code> type instance for a property on this resource containing the path of another

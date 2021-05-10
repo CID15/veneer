@@ -57,13 +57,13 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<VeneeredResource> getVeneeredResource(final String relativePath) {
-        return veneeredResource.getVeneeredResource(relativePath);
+    public final Optional<VeneeredResource> getResource(final String relativePath) {
+        return veneeredResource.getResource(relativePath);
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResources() {
-        return veneeredResource.getVeneeredResources();
+    public final List<VeneeredResource> getResources() {
+        return veneeredResource.getResources();
     }
 
     @Override
@@ -92,8 +92,8 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResources(final Predicate<VeneeredResource> predicate) {
-        return veneeredResource.getVeneeredResources(predicate);
+    public final List<VeneeredResource> getResources(final Predicate<VeneeredResource> predicate) {
+        return veneeredResource.getResources(predicate);
     }
 
     @Override
@@ -117,8 +117,8 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResources(final String relativePath) {
-        return veneeredResource.getVeneeredResources(relativePath);
+    public final List<VeneeredResource> getResources(final String relativePath) {
+        return veneeredResource.getResources(relativePath);
     }
 
     @Override
@@ -132,8 +132,8 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResources(final String relativePath, final String resourceType) {
-        return veneeredResource.getVeneeredResources(relativePath, resourceType);
+    public final List<VeneeredResource> getResources(final String relativePath, final String resourceType) {
+        return veneeredResource.getResources(relativePath, resourceType);
     }
 
     @Override
@@ -147,9 +147,9 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResources(final String relativePath,
+    public final List<VeneeredResource> getResources(final String relativePath,
         final Predicate<VeneeredResource> predicate) {
-        return veneeredResource.getVeneeredResources(relativePath, predicate);
+        return veneeredResource.getResources(relativePath, predicate);
     }
 
     @Override
@@ -173,29 +173,29 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<VeneeredResource> getVeneeredResourceInherited(final String relativePath) {
-        return veneeredResource.getVeneeredResourceInherited(relativePath);
+    public final Optional<VeneeredResource> getResourceInherited(final String relativePath) {
+        return veneeredResource.getResourceInherited(relativePath);
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResourcesInherited() {
-        return veneeredResource.getVeneeredResourcesInherited();
+    public final List<VeneeredResource> getResourcesInherited() {
+        return veneeredResource.getResourcesInherited();
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResourcesInherited(final Predicate<VeneeredResource> predicate) {
-        return veneeredResource.getVeneeredResourcesInherited(predicate);
+    public final List<VeneeredResource> getResourcesInherited(final Predicate<VeneeredResource> predicate) {
+        return veneeredResource.getResourcesInherited(predicate);
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath) {
-        return veneeredResource.getVeneeredResourcesInherited(relativePath);
+    public final List<VeneeredResource> getResourcesInherited(final String relativePath) {
+        return veneeredResource.getResourcesInherited(relativePath);
     }
 
     @Override
-    public final List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath,
+    public final List<VeneeredResource> getResourcesInherited(final String relativePath,
         final Predicate<VeneeredResource> predicate) {
-        return veneeredResource.getVeneeredResourcesInherited(relativePath, predicate);
+        return veneeredResource.getResourcesInherited(relativePath, predicate);
     }
 
     @Override
@@ -224,22 +224,22 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<VeneeredPage> getAsVeneeredPageInherited(final String propertyName) {
-        return veneeredResource.getAsVeneeredPageInherited(propertyName);
+    public final Optional<VeneeredPage> getAsPageInherited(final String propertyName) {
+        return veneeredResource.getAsPageInherited(propertyName);
     }
 
     @Override
-    public final List<VeneeredPage> getAsVeneeredPageListInherited(final String propertyName) {
-        return veneeredResource.getAsVeneeredPageListInherited(propertyName);
+    public final List<VeneeredPage> getAsPageListInherited(final String propertyName) {
+        return veneeredResource.getAsPageListInherited(propertyName);
     }
 
     @Override
-    public final Optional<Resource> getAsResourceInherited(final String propertyName) {
+    public final Optional<VeneeredResource> getAsResourceInherited(final String propertyName) {
         return veneeredResource.getAsResourceInherited(propertyName);
     }
 
     @Override
-    public final List<Resource> getAsResourceListInherited(final String propertyName) {
+    public final List<VeneeredResource> getAsResourceListInherited(final String propertyName) {
         return veneeredResource.getAsResourceListInherited(propertyName);
     }
 
@@ -266,22 +266,22 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<VeneeredPage> getAsVeneeredPage(final String propertyName) {
-        return veneeredResource.getAsVeneeredPage(propertyName);
+    public final Optional<VeneeredPage> getAsPage(final String propertyName) {
+        return veneeredResource.getAsPage(propertyName);
     }
 
     @Override
-    public final List<VeneeredPage> getAsVeneeredPageList(final String propertyName) {
-        return veneeredResource.getAsVeneeredPageListInherited(propertyName);
+    public final List<VeneeredPage> getAsPageList(final String propertyName) {
+        return veneeredResource.getAsPageListInherited(propertyName);
     }
 
     @Override
-    public final Optional<Resource> getAsResource(final String propertyName) {
+    public final Optional<VeneeredResource> getAsResource(final String propertyName) {
         return veneeredResource.getAsResource(propertyName);
     }
 
     @Override
-    public final List<Resource> getAsResourceList(final String propertyName) {
+    public final List<VeneeredResource> getAsResourceList(final String propertyName) {
         return veneeredResource.getAsResourceList(propertyName);
     }
 

@@ -147,7 +147,7 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
      *
      * @return the page manager
      */
-    VeneeredPageManager getVeneeredPageManager();
+    VeneeredPageManager getPageManager();
 
     /**
      * Returns the parent page if it's resource adapts to page.

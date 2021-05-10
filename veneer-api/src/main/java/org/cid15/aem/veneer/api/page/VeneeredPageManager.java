@@ -30,7 +30,7 @@ public interface VeneeredPageManager {
      * @param matchOne if true, 'OR' the specified tag IDs, 'AND' otherwise
      * @return pages containing specified tags
      */
-    List<VeneeredPage> findVeneeredPages(String rootPath, Collection<String> tagIds, boolean matchOne);
+    List<VeneeredPage> findPages(String rootPath, Collection<String> tagIds, boolean matchOne);
 
     /**
      * Find all descendant pages of the given path matching the template path.
@@ -39,7 +39,7 @@ public interface VeneeredPageManager {
      * @param templatePath template path
      * @return pages matching specified template
      */
-    List<VeneeredPage> findVeneeredPages(String rootPath, String templatePath);
+    List<VeneeredPage> findPages(String rootPath, String templatePath);
 
     /**
      * Find all descendant pages of the given path that match the predicate.
@@ -48,7 +48,7 @@ public interface VeneeredPageManager {
      * @param predicate predicate to determine if a page should be included in the result list
      * @return pages matching filter criteria
      */
-    List<VeneeredPage> findVeneeredPages(String rootPath, Predicate<VeneeredPage> predicate);
+    List<VeneeredPage> findPages(String rootPath, Predicate<VeneeredPage> predicate);
 
     /**
      * Convenience method that returns the page at the given path. If the resource at that path does not exist or is not
@@ -57,7 +57,7 @@ public interface VeneeredPageManager {
      * @param path path of the page
      * @return page or <code>null</code>
      */
-    VeneeredPage getVeneeredPage(String path);
+    VeneeredPage getPage(String path);
 
     /**
      * Decorate the given page.
@@ -65,7 +65,7 @@ public interface VeneeredPageManager {
      * @param page non-null CQ page
      * @return decorated page
      */
-    VeneeredPage getVeneeredPage(Page page);
+    VeneeredPage getPage(Page page);
 
     /**
      * Returns the page that contains this resource. If the resource is a page the resource is returned. Otherwise it
@@ -74,7 +74,7 @@ public interface VeneeredPageManager {
      * @param resource resource to find the page for
      * @return page or <code>null</code> if not found.
      */
-    VeneeredPage getContainingVeneeredPage(Resource resource);
+    VeneeredPage getContainingPage(Resource resource);
 
     /**
      * Returns the page that contains the resource at the given path. If the path addresses a page, that page is
@@ -83,7 +83,7 @@ public interface VeneeredPageManager {
      * @param path path to find the page for
      * @return page or <code>null</code> if not found.
      */
-    VeneeredPage getContainingVeneeredPage(String path);
+    VeneeredPage getContainingPage(String path);
 
     /**
      * Search for pages using a query.
