@@ -217,48 +217,6 @@ class DefaultVeneeredPageSpec extends VeneerSpec {
         "/content/cid15/empty" | "otherPagePath"       | false
     }
 
-    def "get as href strict"() {
-        setup:
-        def veneeredPage = getVeneeredPage(path)
-
-        expect:
-        veneeredPage.getAsHref(propertyName, true).present == result
-
-        where:
-        path                   | propertyName          | result
-        "/content/cid15"       | "otherPagePath"       | true
-        "/content/cid15"       | "nonExistentProperty" | false
-        "/content/cid15/empty" | "otherPagePath"       | false
-    }
-
-    def "get as mapped href"() {
-        setup:
-        def veneeredPage = getVeneeredPage(path)
-
-        expect:
-        veneeredPage.getAsHref(propertyName, false, true).present == result
-
-        where:
-        path                   | propertyName          | result
-        "/content/cid15"       | "otherPagePath"       | true
-        "/content/cid15"       | "nonExistentProperty" | false
-        "/content/cid15/empty" | "otherPagePath"       | false
-    }
-
-    def "get as mapped href strict"() {
-        setup:
-        def veneeredPage = getVeneeredPage(path)
-
-        expect:
-        veneeredPage.getAsHref(propertyName, true, true).present == result
-
-        where:
-        path                   | propertyName          | result
-        "/content/cid15"       | "otherPagePath"       | true
-        "/content/cid15"       | "nonExistentProperty" | false
-        "/content/cid15/empty" | "otherPagePath"       | false
-    }
-
     def "find ancestor optional"() {
         setup:
         def veneeredPage = getVeneeredPage(path)
@@ -356,7 +314,7 @@ class DefaultVeneeredPageSpec extends VeneerSpec {
         def veneeredPage = getVeneeredPage("/content/cid15")
 
         expect:
-        veneeredPage.veneeredResource.get().path == "/content/cid15/jcr:content"
+        veneeredPage.contentResource.get().path == "/content/cid15/jcr:content"
     }
 
     def "get component resource returns absent optional for page with no jcr:content node"() {
@@ -364,7 +322,7 @@ class DefaultVeneeredPageSpec extends VeneerSpec {
         def veneeredPage = getVeneeredPage("/content/cid15/empty")
 
         expect:
-        !veneeredPage.veneeredResource.present
+        !veneeredPage.contentResource.present
     }
 
     def "get component resource at relative path"() {
@@ -372,7 +330,7 @@ class DefaultVeneeredPageSpec extends VeneerSpec {
         def veneeredPage = getVeneeredPage("/content/cid15")
 
         expect:
-        veneeredPage.getVeneeredResource("component/one").get().path == "/content/cid15/jcr:content/component/one"
+        veneeredPage.getContentResource("component/one").get().path == "/content/cid15/jcr:content/component/one"
     }
 
     def "get child"() {

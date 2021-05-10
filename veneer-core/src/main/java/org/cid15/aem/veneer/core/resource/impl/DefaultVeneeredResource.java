@@ -31,7 +31,6 @@ import org.cid15.aem.veneer.core.link.builders.factory.LinkBuilderFactory;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyExistsPredicate;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyValuePredicate;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourceTypePredicate;
-import org.cid15.aem.veneer.core.utils.PathUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,32 +128,17 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public Optional<String> getAsHref(final String propertyName) {
-        return getAsHref(propertyName, false);
-    }
-
-    @Override
-    public Optional<String> getAsHref(final String propertyName, final boolean strict) {
-        return getAsHref(propertyName, strict, false);
-    }
-
-    @Override
-    public Optional<String> getAsHref(final String propertyName, final boolean strict, final boolean mapped) {
-        return getAsLink(propertyName, strict, mapped).map(Link :: getHref);
+        return getAsLink(propertyName).map(Link :: getHref);
     }
 
     @Override
     public Optional<Link> getAsLink(final String propertyName) {
-        return getAsLink(propertyName, false);
+        return getAsLinkBuilder(propertyName).map(LinkBuilder :: build);
     }
 
     @Override
-    public Optional<Link> getAsLink(final String propertyName, final boolean strict) {
-        return getAsLink(propertyName, strict, false);
-    }
-
-    @Override
-    public Optional<Link> getAsLink(final String propertyName, final boolean strict, final boolean mapped) {
-        return getLinkOptional(get(propertyName, String.class), strict, mapped);
+    public Optional<LinkBuilder> getAsLinkBuilder(final String propertyName) {
+        return getLinkBuilder(get(propertyName, String.class));
     }
 
     @Override
@@ -190,32 +174,17 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public String getHref() {
-        return getHref(false);
-    }
-
-    @Override
-    public String getHref(final boolean mapped) {
-        return getLink(mapped).getHref();
+        return getLink().getHref();
     }
 
     @Override
     public Link getLink() {
-        return getLink(false);
-    }
-
-    @Override
-    public Link getLink(final boolean mapped) {
-        return getLinkBuilder(mapped).build();
+        return getLinkBuilder().build();
     }
 
     @Override
     public LinkBuilder getLinkBuilder() {
-        return getLinkBuilder(false);
-    }
-
-    @Override
-    public LinkBuilder getLinkBuilder(final boolean mapped) {
-        return LinkBuilderFactory.forResource(resource, mapped);
+        return LinkBuilderFactory.forResource(resource);
     }
 
     @Override
@@ -410,32 +379,17 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public Optional<String> getAsHrefInherited(final String propertyName) {
-        return getAsHrefInherited(propertyName, false);
-    }
-
-    @Override
-    public Optional<String> getAsHrefInherited(final String propertyName, final boolean mapped) {
-        return getAsHrefInherited(propertyName, mapped, false);
-    }
-
-    @Override
-    public Optional<String> getAsHrefInherited(final String propertyName, final boolean strict, final boolean mapped) {
-        return getAsLinkInherited(propertyName, strict, mapped).map(Link :: getHref);
+        return getAsLinkInherited(propertyName).map(Link :: getHref);
     }
 
     @Override
     public Optional<Link> getAsLinkInherited(final String propertyName) {
-        return getAsLinkInherited(propertyName, false);
+        return getAsLinkBuilderInherited(propertyName).map(LinkBuilder :: build);
     }
 
     @Override
-    public Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict) {
-        return getAsLinkInherited(propertyName, strict, false);
-    }
-
-    @Override
-    public Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict, final boolean mapped) {
-        return getLinkOptional(getInherited(propertyName, String.class), strict, mapped);
+    public Optional<LinkBuilder> getAsLinkBuilderInherited(final String propertyName) {
+        return getLinkBuilder(getInherited(propertyName, String.class));
     }
 
     @Override
@@ -638,30 +592,8 @@ public final class DefaultVeneeredResource implements VeneeredResource {
         return type == Resource.class ? (Optional<AdapterType>) resource : resource.map(r -> r.adaptTo(type));
     }
 
-    private Optional<Link> getLinkOptional(final Optional<String> pathOptional, final boolean strict,
-        final boolean mapped) {
-        return pathOptional.map(path -> {
-            final ResourceResolver resourceResolver = resource.getResourceResolver();
-            final Resource resource = resourceResolver.getResource(path);
-
-            final LinkBuilder linkBuilder;
-
-            if (resource != null) {
-                // internal link
-                linkBuilder = LinkBuilderFactory.forResource(resource, mapped);
-            } else {
-                // external link
-                final String mappedPath = mapped ? resourceResolver.map(path) : path;
-
-                linkBuilder = LinkBuilderFactory.forPath(mappedPath);
-
-                if (strict) {
-                    linkBuilder.setExternal(PathUtils.isExternal(mappedPath, resourceResolver));
-                }
-            }
-
-            return linkBuilder.build();
-        });
+    private Optional<LinkBuilder> getLinkBuilder(final Optional<String> pathOptional) {
+        return pathOptional.map(LinkBuilderFactory :: forPath);
     }
 
     private int getIndexForPredicate(final Predicate<Resource> resourceTypePredicate) {

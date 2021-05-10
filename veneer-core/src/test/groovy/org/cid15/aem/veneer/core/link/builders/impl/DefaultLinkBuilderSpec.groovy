@@ -58,6 +58,18 @@ class DefaultLinkBuilderSpec extends VeneerSpec {
         link.title == "Global"
     }
 
+    def "build link for page with no extension"() {
+        setup:
+        def veneeredPage = getVeneeredPage("/content/global")
+        def link = LinkBuilderFactory.forPage(veneeredPage).noExtension().build()
+
+        expect:
+        link.path == "/content/global"
+        link.href == "/content/global"
+        !link.extension.isPresent()
+        link.title == "Global"
+    }
+
     def "build link for page with no jcr:content node"() {
         setup:
         def veneeredPage = getVeneeredPage("/content/se")
@@ -109,7 +121,9 @@ class DefaultLinkBuilderSpec extends VeneerSpec {
     def "build link for mapped page"() {
         setup:
         def veneeredPage = getVeneeredPage(path)
-        def link = LinkBuilderFactory.forPage(veneeredPage, mapped).build()
+        def link = LinkBuilderFactory.forPage(veneeredPage)
+            .mapped(mapped ? resourceResolver : null)
+            .build()
 
         expect:
         link.href == mappedHref
@@ -133,7 +147,9 @@ class DefaultLinkBuilderSpec extends VeneerSpec {
     def "build link for mapped resource"() {
         setup:
         def resource = getResource("/content/us")
-        def link = LinkBuilderFactory.forResource(resource, true).build()
+        def link = LinkBuilderFactory.forResource(resource)
+            .mapped(resourceResolver)
+            .build()
 
         expect:
         link.path == "/content/us"

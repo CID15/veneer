@@ -1,10 +1,11 @@
 package org.cid15.aem.veneer.api;
 
-import org.cid15.aem.veneer.api.link.Link;
-import org.cid15.aem.veneer.api.page.VeneeredPage;
 import com.day.cq.tagging.Tag;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ValueMap;
+import org.cid15.aem.veneer.api.link.Link;
+import org.cid15.aem.veneer.api.link.builders.LinkBuilder;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,70 +55,20 @@ public interface Accessible {
     Optional<String> getAsHref(String propertyName);
 
     /**
-     * Given a property on this resource containing the path of another resource, get an <code>Optional</code>
-     * containing the href to the resource.  Use this method with a <code>true</code> argument when appending ".html" to
-     * the resource path is desired only for valid CQ pages and not external paths.
-     *
-     * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have
-     * ".html" appended
-     * @return href value wrapped in an <code>Optional</code>
-     */
-    Optional<String> getAsHref(String propertyName, boolean strict);
-
-    /**
-     * Given a property on this resource containing the path of another resource, get an <code>Optional</code>
-     * containing the href to the resource.  Use this method with a <code>true</code> argument when appending ".html" to
-     * the resource path is desired only for valid CQ pages and not external paths.  Setting <code>mapped</code> to
-     * <code>true</code> will map the path value, if it exists, through the Sling Resource Resolver.
-     *
-     * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have
-     * ".html" appended
-     * @param mapped if true, the property value will be routed through the Resource Resolver to determine the mapped
-     * path for the value.  For example, if a mapping from "/content/" to "/" exists in the Apache Sling Resource
-     * Resolver Factory OSGi configuration, getting the mapped href for the path "/content/cid15" will return
-     * "/cid15.html".
-     * @return href value wrapped in an <code>Optional</code>
-     */
-    Optional<String> getAsHref(String propertyName, boolean strict, boolean mapped);
-
-    /**
      * Given a property on this resource containing the path of another resource, get a link to the resource.
      *
      * @param propertyName name of property containing a valid content path
-     * @return <code>Optional</code> link object, absent if property does not contain a valid content path
+     * @return <code>Optional</code> link
      */
     Optional<Link> getAsLink(String propertyName);
 
     /**
-     * Given a property on this resource containing the path of another resource, get a link to the resource.  Use this
-     * method with a <code>true</code> argument when including an extension for the link is desired only for valid CQ
-     * pages and not external paths.
+     * Given a property on this resource containing the path of another resource, get a link builder for the resource.
      *
      * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have an
-     * extension
-     * @return <code>Optional</code> link object, absent if property does not contain a valid content path
+     * @return <code>Optional</code> link builder
      */
-    Optional<Link> getAsLink(String propertyName, boolean strict);
-
-    /**
-     * Given a property on this resource containing the path of another resource, get a link to the resource.  Use this
-     * method with a <code>true</code> argument when including an extension for the link is desired only for valid CQ
-     * pages and not external paths.  Setting <code>mapped</code> to <code>true</code> will map the path value, if it
-     * exists, through the Sling Resource Resolver.
-     *
-     * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have an
-     * extension
-     * @param mapped if true, the property value will be routed through the Resource Resolver to determine the mapped
-     * path for the value.  For example, if a mapping from "/content/" to "/" exists in the Apache Sling Resource
-     * Resolver Factory OSGi configuration, the <code>Link</code> path will be "/cid15" rather than
-     * "/content/cid15".
-     * @return <code>Optional</code> link object, absent if property does not contain a valid content path
-     */
-    Optional<Link> getAsLink(String propertyName, boolean strict, boolean mapped);
+    Optional<LinkBuilder> getAsLinkBuilder(String propertyName);
 
     /**
      * Get a multi-valued property from the current resource as a list of the given type.

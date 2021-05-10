@@ -37,11 +37,6 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final String getHref(final boolean mapped) {
-        return veneeredResource.getHref(mapped);
-    }
-
-    @Override
     public final Optional<String> getAsHrefInherited(final String propertyName) {
         return veneeredResource.getAsHrefInherited(propertyName);
     }
@@ -64,11 +59,6 @@ public abstract class AbstractComponent implements VeneeredResource {
     @Override
     public final Optional<VeneeredResource> getVeneeredResource(final String relativePath) {
         return veneeredResource.getVeneeredResource(relativePath);
-    }
-
-    @Override
-    public final Link getLink(final boolean mapped) {
-        return veneeredResource.getLink(mapped);
     }
 
     @Override
@@ -102,11 +92,6 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<String> getAsHrefInherited(final String propertyName, final boolean strict) {
-        return veneeredResource.getAsHrefInherited(propertyName, strict);
-    }
-
-    @Override
     public final List<VeneeredResource> getVeneeredResources(final Predicate<VeneeredResource> predicate) {
         return veneeredResource.getVeneeredResources(predicate);
     }
@@ -114,11 +99,6 @@ public abstract class AbstractComponent implements VeneeredResource {
     @Override
     public final boolean isHasImage() {
         return veneeredResource.isHasImage();
-    }
-
-    @Override
-    public final LinkBuilder getLinkBuilder(final boolean mapped) {
-        return veneeredResource.getLinkBuilder(mapped);
     }
 
     @Override
@@ -167,17 +147,6 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<String> getAsHref(final String propertyName, final boolean strict) {
-        return veneeredResource.getAsHref(propertyName, strict);
-    }
-
-    @Override
-    public final Optional<String> getAsHrefInherited(final String propertyName, final boolean strict,
-        final boolean mapped) {
-        return veneeredResource.getAsHrefInherited(propertyName, strict, mapped);
-    }
-
-    @Override
     public final List<VeneeredResource> getVeneeredResources(final String relativePath,
         final Predicate<VeneeredResource> predicate) {
         return veneeredResource.getVeneeredResources(relativePath, predicate);
@@ -199,6 +168,11 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
+    public final Optional<LinkBuilder> getAsLinkBuilderInherited(final String propertyName) {
+        return veneeredResource.getAsLinkBuilderInherited(propertyName);
+    }
+
+    @Override
     public final Optional<VeneeredResource> getVeneeredResourceInherited(final String relativePath) {
         return veneeredResource.getVeneeredResourceInherited(relativePath);
     }
@@ -211,16 +185,6 @@ public abstract class AbstractComponent implements VeneeredResource {
     @Override
     public final List<VeneeredResource> getVeneeredResourcesInherited(final Predicate<VeneeredResource> predicate) {
         return veneeredResource.getVeneeredResourcesInherited(predicate);
-    }
-
-    @Override
-    public final Optional<String> getAsHref(final String propertyName, final boolean strict, final boolean mapped) {
-        return veneeredResource.getAsHref(propertyName, strict, mapped);
-    }
-
-    @Override
-    public final Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict) {
-        return veneeredResource.getAsLinkInherited(propertyName, strict);
     }
 
     @Override
@@ -250,24 +214,13 @@ public abstract class AbstractComponent implements VeneeredResource {
     }
 
     @Override
-    public final Optional<Link> getAsLink(final String propertyName, final boolean strict) {
-        return veneeredResource.getAsLink(propertyName, strict);
-    }
-
-    @Override
-    public final Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict,
-        final boolean mapped) {
-        return veneeredResource.getAsLinkInherited(propertyName, strict, mapped);
+    public final Optional<LinkBuilder> getAsLinkBuilder(final String propertyName) {
+        return veneeredResource.getAsLinkBuilder(propertyName);
     }
 
     @Override
     public final <T> List<T> getAsListInherited(final String propertyName, final Class<T> type) {
         return veneeredResource.getAsListInherited(propertyName, type);
-    }
-
-    @Override
-    public final Optional<Link> getAsLink(final String propertyName, final boolean strict, final boolean mapped) {
-        return veneeredResource.getAsLink(propertyName, strict, mapped);
     }
 
     @Override
