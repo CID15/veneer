@@ -143,13 +143,6 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
     VeneeredPage getAbsoluteParent(int level);
 
     /**
-     * Convenience method that returns the manager of this page.
-     *
-     * @return the page manager
-     */
-    VeneeredPageManager getPageManager();
-
-    /**
      * Returns the parent page if it's resource adapts to page.
      *
      * @return the parent page or <code>null</code>
@@ -175,4 +168,11 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
      * @return the respective parent page or <code>null</code>
      */
     VeneeredPage getParent(int level);
+
+    /**
+     * Get the page manager for this page.
+     *
+     * @return the page manager
+     */
+    VeneeredPageManager getPageManager();
 }

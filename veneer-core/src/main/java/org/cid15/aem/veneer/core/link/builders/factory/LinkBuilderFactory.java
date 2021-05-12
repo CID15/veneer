@@ -2,6 +2,7 @@ package org.cid15.aem.veneer.core.link.builders.factory;
 
 import com.day.cq.dam.api.Asset;
 import com.day.cq.dam.api.DamConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.cid15.aem.veneer.api.constants.PropertyConstants;
 import org.cid15.aem.veneer.api.link.Link;
@@ -81,7 +82,7 @@ public final class LinkBuilderFactory {
      * @return builder with the given email address link
      */
     public static LinkBuilder forEmail(final String emailAddress) {
-        return forPath("mailto:" + emailAddress);
+        return forPath("mailto:" + emailAddress).setTitle(emailAddress);
     }
 
     /**
@@ -91,7 +92,7 @@ public final class LinkBuilderFactory {
      * @return builder with the given phone number link
      */
     public static LinkBuilder forTelephoneNumber(final String telephoneNumber) {
-        return forPath("tel:" + telephoneNumber);
+        return forPath("tel:" + telephoneNumber).setTitle(telephoneNumber);
     }
 
     /**
@@ -105,9 +106,12 @@ public final class LinkBuilderFactory {
         final Resource assetResource = checkNotNull(asset).adaptTo(Resource.class);
 
         final String title = Optional.ofNullable(asset.getMetadataValue(DamConstants.DC_TITLE))
+            .map(StringUtils :: trimToNull)
             .orElse(asset.getName());
 
-        return forResource(assetResource).setTitle(title);
+        return forResource(assetResource)
+            .noExtension()
+            .setTitle(title);
     }
 
     /**
