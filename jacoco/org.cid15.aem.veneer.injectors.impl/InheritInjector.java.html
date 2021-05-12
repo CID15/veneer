@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 <span class="fc bfc" id="L35" title="All 2 branches covered.">            if (InjectorUtils.isParameterizedListType(declaredType)) {</span>
 <span class="fc" id="L36">                final Class&lt;?&gt; typeClass = InjectorUtils.getActualType((ParameterizedType) declaredType);</span>
 
-<span class="fc" id="L38">                value = veneeredResource.getVeneeredResourcesInherited(name)</span>
+<span class="fc" id="L38">                value = veneeredResource.getResourcesInherited(name)</span>
 <span class="fc" id="L39">                    .stream()</span>
 <span class="fc" id="L40">                    .map(cr -&gt; cr.getResource().adaptTo(typeClass))</span>
 <span class="fc" id="L41">                    .collect(Collectors.toList());</span>
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 <span class="fc" id="L47">                value = veneeredResource.getInherited(name, (Class) declaredType).orElse(null);</span>
 
 <span class="fc bfc" id="L49" title="All 2 branches covered.">                if (value == null) {</span>
-<span class="fc" id="L50">                    value = veneeredResource.getVeneeredResourceInherited(name)</span>
+<span class="fc" id="L50">                    value = veneeredResource.getResourceInherited(name)</span>
 <span class="fc" id="L51">                        .map(VeneeredResource :: getResource)</span>
 <span class="fc" id="L52">                        .map(resource -&gt; resource.adaptTo((Class) declaredType))</span>
 <span class="fc" id="L53">                        .orElse(null);</span>
