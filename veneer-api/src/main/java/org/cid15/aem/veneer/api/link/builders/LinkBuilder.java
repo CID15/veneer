@@ -1,7 +1,8 @@
 package org.cid15.aem.veneer.api.link.builders;
 
-import org.cid15.aem.veneer.api.link.Link;
 import com.google.common.collect.SetMultimap;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.cid15.aem.veneer.api.link.Link;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,14 @@ public interface LinkBuilder {
      * @return link
      */
     Link build();
+
+    /**
+     * Use the given resource resolver to map the link path.
+     *
+     * @param resourceResolver resource resolver
+     * @return builder
+     */
+    LinkBuilder mapped(ResourceResolver resourceResolver);
 
     /**
      * Add a child link.
@@ -99,6 +108,13 @@ public interface LinkBuilder {
      * @return builder
      */
     LinkBuilder setExtension(String extension);
+
+    /**
+     * Do not set an extension for this link.
+     *
+     * @return builder
+     */
+    LinkBuilder noExtension();
 
     /**
      * Set whether the link should be considered external, i.e. not a valid content path.

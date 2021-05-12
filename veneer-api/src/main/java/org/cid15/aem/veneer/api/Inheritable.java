@@ -1,10 +1,10 @@
 package org.cid15.aem.veneer.api;
 
+import com.day.cq.tagging.Tag;
 import org.cid15.aem.veneer.api.link.Link;
+import org.cid15.aem.veneer.api.link.builders.LinkBuilder;
 import org.cid15.aem.veneer.api.page.VeneeredPage;
 import org.cid15.aem.veneer.api.resource.VeneeredResource;
-import com.day.cq.tagging.Tag;
-import org.apache.sling.api.resource.Resource;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,73 +26,22 @@ public interface Inheritable {
     Optional<String> getAsHrefInherited(String propertyName);
 
     /**
-     * Given a property on this resource containing the path of another resource, get the href to the resource, using
-     * inheritance if the value does not exist on this resource.  Use this method with a <code>true</code> argument when
-     * appending ".html" to the resource path is desired only for valid CQ pages and not external paths.
-     *
-     * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have
-     * ".html" appended
-     * @return <code>Optional</code> href
-     */
-    Optional<String> getAsHrefInherited(String propertyName, boolean strict);
-
-    /**
-     * Given a property on this resource containing the path of another resource, get the href to the resource, using
-     * inheritance if the value does not exist on this resource.  Use this method with a <code>true</code> argument when
-     * appending ".html" to the resource path is desired only for valid CQ pages and not external paths.  Setting
-     * <code>mapped</code> to <code>true</code> will map the path value, if it exists, through the Sling Resource
-     * Resolver.
-     *
-     * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have
-     * ".html" appended
-     * @param mapped if true, the property value will be routed through the Resource Resolver to determine the mapped
-     * path for the value.  For example, if a mapping from "/content/" to "/" exists in the Apache Sling Resource
-     * Resolver Factory OSGi configuration, getting the mapped href for the path "/content/cid15" will return
-     * "/cid15.html".
-     * @return <code>Optional</code> href
-     */
-    Optional<String> getAsHrefInherited(String propertyName, boolean strict, boolean mapped);
-
-    /**
      * Given a property on this resource containing the path of another resource, get a link to the resource, using
      * inheritance if the value does not exist on this resource.
      *
      * @param propertyName name of property containing a valid content path
-     * @return <code>Optional</code> link object, or null if the property does not contain a valid content path
+     * @return <code>Optional</code> link
      */
     Optional<Link> getAsLinkInherited(String propertyName);
 
     /**
-     * Given a property on this resource containing the path of another resource, get a link to the resource, using
-     * inheritance if the value does not exist on this resource.  Use this method with a <code>true</code> argument when
-     * including an extension for the link is desired only for valid CQ pages and not external paths.
+     * Given a property on this resource containing the path of another resource, get a link builder for the resource,
+     * using inheritance if the value does not exist on this resource.
      *
      * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have an
-     * extension
-     * @return <code>Optional</code> link object, or null if the property does not contain a valid content path
+     * @return <code>Optional</code> link builder
      */
-    Optional<Link> getAsLinkInherited(String propertyName, boolean strict);
-
-    /**
-     * Given a property on this resource containing the path of another resource, get a link to the resource, using
-     * inheritance if the value does not exist on this resource.  Use this method with a <code>true</code> argument when
-     * including an extension for the link is desired only for valid CQ pages and not external paths.  Setting
-     * <code>mapped</code> to <code>true</code> will map the path value, if it exists, through the Sling Resource
-     * Resolver.
-     *
-     * @param propertyName name of property containing a valid content path
-     * @param strict if true, strict resource resolution will be applied and only valid CQ content paths will have an
-     * extension
-     * @param mapped if true, the property value will be routed through the Resource Resolver to determine the mapped
-     * path for the value.  For example, if a mapping from "/content/" to "/" exists in the Apache Sling Resource
-     * Resolver Factory OSGi configuration, the <code>Link</code> path will be "/cid15" rather than
-     * "/content/cid15".
-     * @return <code>Optional</code> link object, or null if the property does not contain a valid content path
-     */
-    Optional<Link> getAsLinkInherited(String propertyName, boolean strict, boolean mapped);
+    Optional<LinkBuilder> getAsLinkBuilderInherited(String propertyName);
 
     /**
      * Get a multi-valued property from the current resource as a list of the given type, using inheritance if the value
@@ -112,7 +61,7 @@ public interface Inheritable {
      * @param propertyName property name
      * @return <code>Optional</code> page for property value
      */
-    Optional<VeneeredPage> getAsVeneeredPageInherited(String propertyName);
+    Optional<VeneeredPage> getAsPageInherited(String propertyName);
 
     /**
      * Get a multi-valued property from the current resource as a list of pages, using inheritance if the value does not
@@ -122,7 +71,7 @@ public interface Inheritable {
      * @return list of pages, or empty list if either the property does not exist or pages do not exist for the property
      * values
      */
-    List<VeneeredPage> getAsVeneeredPageListInherited(String propertyName);
+    List<VeneeredPage> getAsPageListInherited(String propertyName);
 
     /**
      * Get an <code>Optional</code> resource instance for a property on this resource containing the path of another
@@ -132,7 +81,7 @@ public interface Inheritable {
      * @return <code>Optional</code> instance of the resource, or absent if either the property does not exist or
      * does not resolve to a resource
      */
-    Optional<Resource> getAsResourceInherited(String propertyName);
+    Optional<VeneeredResource> getAsResourceInherited(String propertyName);
 
     /**
      * Get a multi-valued property from the current resource as a list of resources, using inheritance if the value does
@@ -142,7 +91,7 @@ public interface Inheritable {
      * @return list of resources, or empty list if either the property does not exist or does resolve to a list of
      * resources
      */
-    List<Resource> getAsResourceListInherited(String propertyName);
+    List<VeneeredResource> getAsResourceListInherited(String propertyName);
 
     /**
      * Get an <code>Optional</code> type instance for a property on this resource containing the path of another
@@ -233,7 +182,7 @@ public interface Inheritable {
      * @return direct child resource if it exists, otherwise the child resource at this relative path for an ancestor
      * page
      */
-    Optional<VeneeredResource> getVeneeredResourceInherited(String relativePath);
+    Optional<VeneeredResource> getResourceInherited(String relativePath);
 
     /**
      * Get the children of the current resource.  If the current resource has no children, inherit from an ancestor
@@ -242,7 +191,7 @@ public interface Inheritable {
      * @return list of resources representing children of the current resource or inherited from an ancestor page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited();
+    List<VeneeredResource> getResourcesInherited();
 
     /**
      * Get the children of the current resource meeting the predicate condition.  If the current resource has no
@@ -252,7 +201,7 @@ public interface Inheritable {
      * @return list of resources representing children of the current resource or inherited from an ancestor page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited(Predicate<VeneeredResource> predicate);
+    List<VeneeredResource> getResourcesInherited(Predicate<VeneeredResource> predicate);
 
     /**
      * Get the children of a resource relative to the current resource. If resource does not exist relative to current
@@ -262,7 +211,7 @@ public interface Inheritable {
      * @return list of resources representing children of the addressed resource or inherited from a parent page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited(String relativePath);
+    List<VeneeredResource> getResourcesInherited(String relativePath);
 
     /**
      * Get the children of a resource relative to the current resource meeting the predicate condition. If resource does
@@ -273,5 +222,5 @@ public interface Inheritable {
      * @return list of resources representing children of the addressed resource or inherited from a parent page (or
      * empty list if none exist)
      */
-    List<VeneeredResource> getVeneeredResourcesInherited(String relativePath, Predicate<VeneeredResource> predicate);
+    List<VeneeredResource> getResourcesInherited(String relativePath, Predicate<VeneeredResource> predicate);
 }

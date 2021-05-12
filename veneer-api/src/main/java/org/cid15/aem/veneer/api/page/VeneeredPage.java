@@ -1,5 +1,8 @@
 package org.cid15.aem.veneer.api.page;
 
+import com.day.cq.commons.LabeledResource;
+import com.day.cq.wcm.api.Page;
+import org.apache.sling.api.adapter.Adaptable;
 import org.cid15.aem.veneer.api.Accessible;
 import org.cid15.aem.veneer.api.Inheritable;
 import org.cid15.aem.veneer.api.Linkable;
@@ -9,9 +12,6 @@ import org.cid15.aem.veneer.api.link.Link;
 import org.cid15.aem.veneer.api.link.builders.LinkBuilder;
 import org.cid15.aem.veneer.api.page.enums.TitleType;
 import org.cid15.aem.veneer.api.resource.VeneeredResource;
-import com.day.cq.commons.LabeledResource;
-import com.day.cq.wcm.api.Page;
-import org.apache.sling.api.adapter.Adaptable;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -64,21 +64,21 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
     Optional<VeneeredPage> getChild(String name);
 
     /**
-     * Get the component node for the "jcr:content" node for this page. If the page does not have a content node, an
+     * Get the veneered resource for the "jcr:content" node for this page. If the page does not have a content node, an
      * "absent" Optional is returned.
      *
-     * @return optional component node for page content
+     * @return optional veneered resource for page content
      */
-    Optional<VeneeredResource> getVeneeredResource();
+    Optional<VeneeredResource> getContentResource();
 
     /**
-     * Get the component node for the node at the given path relative to the "jcr:content" node for this page. If the
+     * Get the veneered resource for the node at the given path relative to the "jcr:content" node for this page. If the
      * node does not exist, an "absent" Optional is returned.
      *
      * @param relativePath relative path to resource
-     * @return optional component node for resource relative to page content
+     * @return optional veneered resource for resource relative to page content
      */
-    Optional<VeneeredResource> getVeneeredResource(String relativePath);
+    Optional<VeneeredResource> getContentResource(String relativePath);
 
     /**
      * Get a link with a specified title type for this item.
@@ -89,32 +89,12 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
     Link getLink(TitleType titleType);
 
     /**
-     * Get a link with a specified title type for this item.
-     *
-     * @param titleType type of title to set on link
-     * @param mapped if true, the <code>Link</code> path will be routed through the resource resolver to determine the
-     * mapped path (e.g. without leading "/content").
-     * @return link
-     */
-    Link getLink(TitleType titleType, boolean mapped);
-
-    /**
-     * Get a link builder for the current resource path.
+     * Get a link builder for the current page path.
      *
      * @param titleType type of title to set on builder
      * @return builder instance for this item
      */
     LinkBuilder getLinkBuilder(TitleType titleType);
-
-    /**
-     * Get a link builder for the current resource path.
-     *
-     * @param titleType type of title to set on builder
-     * @param mapped if true, the <code>Link</code> path will be routed through the resource resolver to determine the
-     * mapped path (e.g. without leading "/content").
-     * @return builder instance for this item
-     */
-    LinkBuilder getLinkBuilder(TitleType titleType, boolean mapped);
 
     /**
      * Get a navigation link for this page containing an active state. The returned link will use the navigation title
@@ -124,17 +104,6 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
      * @return navigation link
      */
     Link getNavigationLink(boolean isActive);
-
-    /**
-     * Get a navigation link for this page containing an active state. The returned link will use the navigation title
-     * as the link title, defaulting to the JCR title if it does not exist.
-     *
-     * @param isActive active state to be set on returned link
-     * @param mapped if true, the <code>NavigationLink</code> path will be routed through the resource resolver to
-     * determine the mapped path (e.g. without leading "/content").
-     * @return navigation link
-     */
-    Link getNavigationLink(boolean isActive, boolean mapped);
 
     /**
      * Get the template path for this page. This method is preferred over getTemplate().getPath(), which is dependent on
@@ -174,13 +143,6 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
     VeneeredPage getAbsoluteParent(int level);
 
     /**
-     * Convenience method that returns the manager of this page.
-     *
-     * @return the page manager
-     */
-    VeneeredPageManager getVeneeredPageManager();
-
-    /**
      * Returns the parent page if it's resource adapts to page.
      *
      * @return the parent page or <code>null</code>
@@ -206,4 +168,11 @@ public interface VeneeredPage extends Accessible, Inheritable, Linkable, Travers
      * @return the respective parent page or <code>null</code>
      */
     VeneeredPage getParent(int level);
+
+    /**
+     * Get the page manager for this page.
+     *
+     * @return the page manager
+     */
+    VeneeredPageManager getPageManager();
 }

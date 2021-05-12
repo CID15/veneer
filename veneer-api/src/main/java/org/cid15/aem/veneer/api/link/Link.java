@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface Link extends Serializable {
 
     /**
-     * @return extension or null if link is external
+     * @return extension or empty optional if link is external
      */
     Optional<String> getExtension();
 
@@ -38,7 +38,7 @@ public interface Link extends Serializable {
     Map<String, String> getProperties();
 
     /**
-     * @return query string starting with '?' or null if no parameters present
+     * @return query string starting with '?' or empty optional if no parameters present
      */
     Optional<String> getQueryString();
 
@@ -48,12 +48,12 @@ public interface Link extends Serializable {
     List<String> getSelectors();
 
     /**
-     * @return the URL fragment or null if not provided
+     * @return the URL fragment or empty optional if not provided
      */
     Optional<String> getFragment();
 
     /**
-     * @return suffix or null if not provided
+     * @return suffix or empty optional if not provided
      */
     Optional<String> getSuffix();
 

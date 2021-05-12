@@ -31,7 +31,6 @@ import org.cid15.aem.veneer.core.link.builders.factory.LinkBuilderFactory;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyExistsPredicate;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourcePropertyValuePredicate;
 import org.cid15.aem.veneer.core.resource.predicates.VeneeredResourceTypePredicate;
-import org.cid15.aem.veneer.core.utils.PathUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,32 +128,17 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public Optional<String> getAsHref(final String propertyName) {
-        return getAsHref(propertyName, false);
-    }
-
-    @Override
-    public Optional<String> getAsHref(final String propertyName, final boolean strict) {
-        return getAsHref(propertyName, strict, false);
-    }
-
-    @Override
-    public Optional<String> getAsHref(final String propertyName, final boolean strict, final boolean mapped) {
-        return getAsLink(propertyName, strict, mapped).map(Link :: getHref);
+        return getAsLink(propertyName).map(Link :: getHref);
     }
 
     @Override
     public Optional<Link> getAsLink(final String propertyName) {
-        return getAsLink(propertyName, false);
+        return getAsLinkBuilder(propertyName).map(LinkBuilder :: build);
     }
 
     @Override
-    public Optional<Link> getAsLink(final String propertyName, final boolean strict) {
-        return getAsLink(propertyName, strict, false);
-    }
-
-    @Override
-    public Optional<Link> getAsLink(final String propertyName, final boolean strict, final boolean mapped) {
-        return getLinkOptional(get(propertyName, String.class), strict, mapped);
+    public Optional<LinkBuilder> getAsLinkBuilder(final String propertyName) {
+        return getLinkBuilder(get(propertyName, String.class));
     }
 
     @Override
@@ -163,25 +147,25 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public Optional<VeneeredPage> getAsVeneeredPage(final String propertyName) {
+    public Optional<VeneeredPage> getAsPage(final String propertyName) {
         return getPageOptional(getProperties().get(checkNotNull(propertyName), String.class));
     }
 
     @Override
-    public List<VeneeredPage> getAsVeneeredPageList(final String propertyName) {
+    public List<VeneeredPage> getAsPageList(final String propertyName) {
         return Arrays.stream(getProperties().get(checkNotNull(propertyName), new String[0]))
-            .map(getPageManager() :: getVeneeredPage)
+            .map(getPageManager() :: getPage)
             .filter(java.util.Objects :: nonNull)
             .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Resource> getAsResource(final String propertyName) {
+    public Optional<VeneeredResource> getAsResource(final String propertyName) {
         return getAsResourceOptional(getProperties().get(checkNotNull(propertyName), String.class));
     }
 
     @Override
-    public List<Resource> getAsResourceList(final String propertyName) {
+    public List<VeneeredResource> getAsResourceList(final String propertyName) {
         return Arrays.stream(getProperties().get(checkNotNull(propertyName), new String[0]))
             .map(path -> getAsResourceOptional(path).orElse(null))
             .filter(java.util.Objects :: nonNull)
@@ -190,32 +174,17 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public String getHref() {
-        return getHref(false);
-    }
-
-    @Override
-    public String getHref(final boolean mapped) {
-        return getLink(mapped).getHref();
+        return getLink().getHref();
     }
 
     @Override
     public Link getLink() {
-        return getLink(false);
-    }
-
-    @Override
-    public Link getLink(final boolean mapped) {
-        return getLinkBuilder(mapped).build();
+        return getLinkBuilder().build();
     }
 
     @Override
     public LinkBuilder getLinkBuilder() {
-        return getLinkBuilder(false);
-    }
-
-    @Override
-    public LinkBuilder getLinkBuilder(final boolean mapped) {
-        return LinkBuilderFactory.forResource(resource, mapped);
+        return LinkBuilderFactory.forResource(resource);
     }
 
     @Override
@@ -237,7 +206,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
         } else if (resource.getResourceType().equals(NameConstants.NT_PAGE)) {
             path = resource.getPath();
         } else {
-            final VeneeredPage currentPage = getPageManager().getContainingVeneeredPage(resource);
+            final VeneeredPage currentPage = getPageManager().getContainingPage(resource);
 
             if (currentPage != null) {
                 // remove page content path since resource path relative to jcr:content will always be unique
@@ -371,7 +340,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     public List<VeneeredResource> findDescendants(final Predicate<VeneeredResource> predicate) {
         final List<VeneeredResource> descendantVeneeredResources = new ArrayList<>();
 
-        for (final VeneeredResource veneeredResource : getVeneeredResources()) {
+        for (final VeneeredResource veneeredResource : getResources()) {
             if (predicate.test(veneeredResource)) {
                 descendantVeneeredResources.add(veneeredResource);
             }
@@ -410,32 +379,17 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public Optional<String> getAsHrefInherited(final String propertyName) {
-        return getAsHrefInherited(propertyName, false);
-    }
-
-    @Override
-    public Optional<String> getAsHrefInherited(final String propertyName, final boolean mapped) {
-        return getAsHrefInherited(propertyName, mapped, false);
-    }
-
-    @Override
-    public Optional<String> getAsHrefInherited(final String propertyName, final boolean strict, final boolean mapped) {
-        return getAsLinkInherited(propertyName, strict, mapped).map(Link :: getHref);
+        return getAsLinkInherited(propertyName).map(Link :: getHref);
     }
 
     @Override
     public Optional<Link> getAsLinkInherited(final String propertyName) {
-        return getAsLinkInherited(propertyName, false);
+        return getAsLinkBuilderInherited(propertyName).map(LinkBuilder :: build);
     }
 
     @Override
-    public Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict) {
-        return getAsLinkInherited(propertyName, strict, false);
-    }
-
-    @Override
-    public Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict, final boolean mapped) {
-        return getLinkOptional(getInherited(propertyName, String.class), strict, mapped);
+    public Optional<LinkBuilder> getAsLinkBuilderInherited(final String propertyName) {
+        return getLinkBuilder(getInherited(propertyName, String.class));
     }
 
     @Override
@@ -444,26 +398,26 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public Optional<VeneeredPage> getAsVeneeredPageInherited(final String propertyName) {
+    public Optional<VeneeredPage> getAsPageInherited(final String propertyName) {
         return getPageOptional(getProperties().getInherited(checkNotNull(propertyName), ""));
     }
 
     @Override
-    public List<VeneeredPage> getAsVeneeredPageListInherited(final String propertyName) {
+    public List<VeneeredPage> getAsPageListInherited(final String propertyName) {
         return getAsListInherited(propertyName, String.class)
             .stream()
-            .map(getPageManager() :: getVeneeredPage)
+            .map(getPageManager() :: getPage)
             .filter(java.util.Objects :: nonNull)
             .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Resource> getAsResourceInherited(final String propertyName) {
+    public Optional<VeneeredResource> getAsResourceInherited(final String propertyName) {
         return getAsResourceOptional(getProperties().getInherited(checkNotNull(propertyName), ""));
     }
 
     @Override
-    public List<Resource> getAsResourceListInherited(final String propertyName) {
+    public List<VeneeredResource> getAsResourceListInherited(final String propertyName) {
         return getAsListInherited(propertyName, String.class)
             .stream()
             .map(path -> getAsResourceOptional(path).orElse(null))
@@ -490,12 +444,12 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public Optional<VeneeredResource> getVeneeredResource(final String relativePath) {
+    public Optional<VeneeredResource> getResource(final String relativePath) {
         return Optional.ofNullable(resource.getChild(checkNotNull(relativePath))).map(TO_VENEERED_RESOURCE);
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResources() {
+    public List<VeneeredResource> getResources() {
         return Lists.newArrayList(resource.getChildren())
             .stream()
             .map(TO_VENEERED_RESOURCE)
@@ -503,7 +457,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResources(final Predicate<VeneeredResource> predicate) {
+    public List<VeneeredResource> getResources(final Predicate<VeneeredResource> predicate) {
         return Lists.newArrayList(resource.getChildren())
             .stream()
             .map(TO_VENEERED_RESOURCE)
@@ -512,7 +466,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResources(final String relativePath) {
+    public List<VeneeredResource> getResources(final String relativePath) {
         return Optional.ofNullable(resource.getChild(checkNotNull(relativePath)))
             .map(childResource -> Lists.newArrayList(childResource.getChildren())
                 .stream()
@@ -522,14 +476,14 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResources(final String relativePath, final String resourceType) {
-        return getVeneeredResources(relativePath, new VeneeredResourceTypePredicate(resourceType));
+    public List<VeneeredResource> getResources(final String relativePath, final String resourceType) {
+        return getResources(relativePath, new VeneeredResourceTypePredicate(resourceType));
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResources(final String relativePath,
+    public List<VeneeredResource> getResources(final String relativePath,
         final Predicate<VeneeredResource> predicate) {
-        return getVeneeredResources(checkNotNull(relativePath))
+        return getResources(checkNotNull(relativePath))
             .stream()
             .filter(checkNotNull(predicate))
             .collect(Collectors.toList());
@@ -572,21 +526,21 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public Optional<VeneeredResource> getVeneeredResourceInherited(final String relativePath) {
+    public Optional<VeneeredResource> getResourceInherited(final String relativePath) {
         return findChildVeneeredResourceInherited(relativePath);
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited() {
+    public List<VeneeredResource> getResourcesInherited() {
         return findAncestor(veneeredResource -> veneeredResource.getResource().hasChildren())
-            .map(VeneeredResource :: getVeneeredResources)
+            .map(VeneeredResource :: getResources)
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final Predicate<VeneeredResource> predicate) {
+    public List<VeneeredResource> getResourcesInherited(final Predicate<VeneeredResource> predicate) {
         return findAncestor(veneeredResource -> veneeredResource.getResource().hasChildren())
-            .map(veneeredResource -> veneeredResource.getVeneeredResources()
+            .map(veneeredResource -> veneeredResource.getResources()
                 .stream()
                 .filter(predicate)
                 .collect(Collectors.toList()))
@@ -594,17 +548,17 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath) {
+    public List<VeneeredResource> getResourcesInherited(final String relativePath) {
         return findChildVeneeredResourceInherited(relativePath)
-            .map(VeneeredResource :: getVeneeredResources)
+            .map(VeneeredResource :: getResources)
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath,
+    public List<VeneeredResource> getResourcesInherited(final String relativePath,
         final Predicate<VeneeredResource> predicate) {
         return findChildVeneeredResourceInherited(relativePath)
-            .map(veneeredResource -> veneeredResource.getVeneeredResources()
+            .map(veneeredResource -> veneeredResource.getResources()
                 .stream()
                 .filter(predicate)
                 .collect(Collectors.toList()))
@@ -618,43 +572,27 @@ public final class DefaultVeneeredResource implements VeneeredResource {
             .orElse(null);
     }
 
+    @Override
+    public Optional<VeneeredPage> getContainingPage() {
+        final VeneeredPageManager pageManager = resource.getResourceResolver().adaptTo(VeneeredPageManager.class);
+
+        return Optional.ofNullable(pageManager.getContainingPage(resource));
+    }
+
     // internals
 
-    private Optional<Resource> getAsResourceOptional(final String path) {
-        return Optional.ofNullable(path).map(resourcePath -> resource.getResourceResolver().getResource(resourcePath));
+    private Optional<VeneeredResource> getAsResourceOptional(final String path) {
+        return Optional.ofNullable(path)
+            .map(resourcePath -> resource.getResourceResolver().getResource(resourcePath))
+            .map(resource -> resource.adaptTo(VeneeredResource.class));
     }
 
-    @SuppressWarnings("unchecked")
     private <AdapterType> Optional<AdapterType> getAsTypeOptional(final String path, final Class<AdapterType> type) {
-        final Optional<Resource> resource = getAsResourceOptional(path);
-
-        return type == Resource.class ? (Optional<AdapterType>) resource : resource.map(r -> r.adaptTo(type));
+        return getAsResourceOptional(path).map(r -> r.adaptTo(type));
     }
 
-    private Optional<Link> getLinkOptional(final Optional<String> pathOptional, final boolean strict,
-        final boolean mapped) {
-        return pathOptional.map(path -> {
-            final ResourceResolver resourceResolver = resource.getResourceResolver();
-            final Resource resource = resourceResolver.getResource(path);
-
-            final LinkBuilder linkBuilder;
-
-            if (resource != null) {
-                // internal link
-                linkBuilder = LinkBuilderFactory.forResource(resource, mapped);
-            } else {
-                // external link
-                final String mappedPath = mapped ? resourceResolver.map(path) : path;
-
-                linkBuilder = LinkBuilderFactory.forPath(mappedPath);
-
-                if (strict) {
-                    linkBuilder.setExternal(PathUtils.isExternal(mappedPath, resourceResolver));
-                }
-            }
-
-            return linkBuilder.build();
-        });
+    private Optional<LinkBuilder> getLinkBuilder(final Optional<String> pathOptional) {
+        return pathOptional.map(LinkBuilderFactory :: forPath);
     }
 
     private int getIndexForPredicate(final Predicate<Resource> resourceTypePredicate) {
@@ -670,12 +608,12 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     private Optional<VeneeredPage> getPageOptional(final String path) {
-        return Optional.ofNullable(path).map(pagePath -> getPageManager().getVeneeredPage(pagePath));
+        return Optional.ofNullable(path).map(pagePath -> getPageManager().getPage(pagePath));
     }
 
     private Optional<VeneeredResource> findAncestorForPredicate(final Predicate<VeneeredResource> predicate,
         final boolean excludeCurrentResource) {
-        final Page containingPage = getPageManager().getContainingVeneeredPage(resource).getPage();
+        final Page containingPage = getPageManager().getContainingPage(resource).getPage();
 
         // get path of current resource relative to the page's jcr:content node
         final String relativePath = resource.getName().equals(JcrConstants.JCR_CONTENT) ? "" : resource.getPath()
@@ -695,17 +633,16 @@ public final class DefaultVeneeredResource implements VeneeredResource {
     }
 
     private Optional<VeneeredResource> findChildVeneeredResourceInherited(final String relativePath) {
-        final Page containingPage = getPageManager().getContainingVeneeredPage(resource).getPage();
+        final Page containingPage = getPageManager().getContainingPage(resource).getPage();
 
         final StringBuilder builder = new StringBuilder();
 
-        if (resource.getName().equals(JcrConstants.JCR_CONTENT)) {
-            builder.append(relativePath);
-        } else {
+        if (!resource.getName().equals(JcrConstants.JCR_CONTENT)) {
             builder.append(resource.getPath().substring(containingPage.getContentResource().getPath().length() + 1));
             builder.append('/');
-            builder.append(relativePath);
         }
+
+        builder.append(relativePath);
 
         // path relative to jcr:content
         final String resourcePath = builder.toString();

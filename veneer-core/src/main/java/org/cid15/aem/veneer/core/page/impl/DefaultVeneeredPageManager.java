@@ -49,7 +49,7 @@ public final class DefaultVeneeredPageManager implements VeneeredPageManager {
     }
 
     @Override
-    public List<VeneeredPage> findVeneeredPages(final String rootPath, final Collection<String> tagIds,
+    public List<VeneeredPage> findPages(final String rootPath, final Collection<String> tagIds,
         final boolean matchOne) {
         checkNotNull(rootPath);
         checkNotNull(tagIds);
@@ -67,7 +67,7 @@ public final class DefaultVeneeredPageManager implements VeneeredPageManager {
             final Resource resource = iterator.next();
 
             if (JcrConstants.JCR_CONTENT.equals(resource.getName())) {
-                final VeneeredPage page = getVeneeredPage(resource.getParent().getPath());
+                final VeneeredPage page = getPage(resource.getParent().getPath());
 
                 if (page != null) {
                     pages.add(page);
@@ -81,15 +81,15 @@ public final class DefaultVeneeredPageManager implements VeneeredPageManager {
     }
 
     @Override
-    public List<VeneeredPage> findVeneeredPages(final String rootPath, final String templatePath) {
-        return findVeneeredPages(rootPath, new TemplatePredicate(templatePath));
+    public List<VeneeredPage> findPages(final String rootPath, final String templatePath) {
+        return findPages(rootPath, new TemplatePredicate(templatePath));
     }
 
     @Override
-    public List<VeneeredPage> findVeneeredPages(final String rootPath, final Predicate<VeneeredPage> predicate) {
+    public List<VeneeredPage> findPages(final String rootPath, final Predicate<VeneeredPage> predicate) {
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
-        final List<VeneeredPage> pages = Optional.ofNullable(getVeneeredPage(checkNotNull(rootPath)))
+        final List<VeneeredPage> pages = Optional.ofNullable(getPage(checkNotNull(rootPath)))
             .map(page -> page.findDescendants(predicate))
             .orElse(Collections.emptyList());
 
@@ -101,25 +101,25 @@ public final class DefaultVeneeredPageManager implements VeneeredPageManager {
     }
 
     @Override
-    public VeneeredPage getContainingVeneeredPage(final Resource resource) {
-        return getVeneeredPage(pageManager.getContainingPage(resource));
+    public VeneeredPage getContainingPage(final Resource resource) {
+        return getPage(pageManager.getContainingPage(resource));
     }
 
     @Override
-    public VeneeredPage getContainingVeneeredPage(final String path) {
-        return getVeneeredPage(pageManager.getContainingPage(path));
+    public VeneeredPage getContainingPage(final String path) {
+        return getPage(pageManager.getContainingPage(path));
     }
 
     @Override
-    public VeneeredPage getVeneeredPage(final Page page) {
+    public VeneeredPage getPage(final Page page) {
         return Optional.ofNullable(page)
             .map(p -> p.adaptTo(VeneeredPage.class))
             .orElse(null);
     }
 
     @Override
-    public VeneeredPage getVeneeredPage(final String path) {
-        return getVeneeredPage(pageManager.getPage(path));
+    public VeneeredPage getPage(final String path) {
+        return getPage(pageManager.getPage(path));
     }
 
     @Override
@@ -150,7 +150,7 @@ public final class DefaultVeneeredPageManager implements VeneeredPageManager {
                 if (limit == -1 || count < limit) {
                     LOG.debug("result path : {}", path);
 
-                    final VeneeredPage page = getContainingVeneeredPage(path);
+                    final VeneeredPage page = getContainingPage(path);
 
                     if (page != null) {
                         // ensure no duplicate pages are added

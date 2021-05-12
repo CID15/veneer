@@ -24,7 +24,7 @@ abstract class VeneerSpec extends ProsperSpec {
     }
 
     VeneeredPage getVeneeredPage(String path) {
-        veneeredPageManager.getVeneeredPage(path)
+        veneeredPageManager.getPage(path)
     }
 
     VeneeredPageManager getVeneeredPageManager() {

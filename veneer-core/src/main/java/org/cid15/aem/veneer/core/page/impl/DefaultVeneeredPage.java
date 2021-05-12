@@ -141,12 +141,12 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     public List<VeneeredPage> findDescendants(final Predicate<VeneeredPage> predicate) {
         final List<VeneeredPage> pages = new ArrayList<>();
 
-        final VeneeredPageManager pageManager = getVeneeredPageManager();
+        final VeneeredPageManager pageManager = getPageManager();
 
         final Iterator<Page> iterator = delegate.listChildren(ALL_PAGES, true);
 
         while (iterator.hasNext()) {
-            final VeneeredPage page = pageManager.getVeneeredPage(iterator.next());
+            final VeneeredPage page = pageManager.getPage(iterator.next());
 
             if (predicate.test(page)) {
                 pages.add(page);
@@ -158,118 +158,85 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
 
     @Override
     public ValueMap getProperties() {
-        return getVeneeredResource()
+        return getContentResource()
             .map(Accessible :: getProperties)
             .orElse(ValueMap.EMPTY);
     }
 
     @Override
     public <T> T get(final String propertyName, final T defaultValue) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.get(propertyName, defaultValue))
+        return getContentResource()
+            .map(resource -> resource.get(propertyName, defaultValue))
             .orElse(defaultValue);
     }
 
     @Override
     public <T> Optional<T> get(final String propertyName, final Class<T> type) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.get(propertyName, type));
+        return getContentResource().flatMap(resource -> resource.get(propertyName, type));
     }
 
     @Override
     public Optional<String> getAsHref(final String propertyName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsHref(propertyName));
-    }
-
-    @Override
-    public Optional<String> getAsHref(final String propertyName, final boolean strict) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsHref(propertyName, strict));
-    }
-
-    @Override
-    public Optional<String> getAsHref(final String propertyName, final boolean strict, final boolean mapped) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsHref(propertyName, strict,
-            mapped));
+        return getContentResource().flatMap(resource -> resource.getAsHref(propertyName));
     }
 
     @Override
     public Optional<String> getAsHrefInherited(final String propertyName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsHrefInherited(propertyName));
-    }
-
-    @Override
-    public Optional<String> getAsHrefInherited(final String propertyName, final boolean strict) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsHrefInherited(propertyName,
-            strict));
-    }
-
-    @Override
-    public Optional<String> getAsHrefInherited(final String propertyName, final boolean strict, final boolean mapped) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsHrefInherited(propertyName,
-            strict, mapped));
+        return getContentResource().flatMap(resource -> resource.getAsHrefInherited(propertyName));
     }
 
     @Override
     public Optional<Link> getAsLinkInherited(final String propertyName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsLinkInherited(propertyName));
+        return getContentResource().flatMap(resource -> resource.getAsLinkInherited(propertyName));
     }
 
     @Override
-    public Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsLinkInherited(propertyName,
-            strict));
-    }
-
-    @Override
-    public Optional<Link> getAsLinkInherited(final String propertyName, final boolean strict, final boolean mapped) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsLinkInherited(propertyName,
-            strict, mapped));
+    public Optional<LinkBuilder> getAsLinkBuilderInherited(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsLinkBuilderInherited(propertyName));
     }
 
     @Override
     public <T> List<T> getAsListInherited(final String propertyName, final Class<T> type) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsListInherited(propertyName, type))
+        return getContentResource()
+            .map(resource -> resource.getAsListInherited(propertyName, type))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public Optional<VeneeredPage> getAsVeneeredPageInherited(final String propertyName) {
-        return getVeneeredResource().flatMap(
-            veneeredResource -> veneeredResource.getAsVeneeredPageInherited(propertyName));
+    public Optional<VeneeredPage> getAsPageInherited(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsPageInherited(propertyName));
     }
 
     @Override
-    public List<VeneeredPage> getAsVeneeredPageListInherited(final String propertyName) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsVeneeredPageListInherited(propertyName))
+    public List<VeneeredPage> getAsPageListInherited(final String propertyName) {
+        return getContentResource()
+            .map(resource -> resource.getAsPageListInherited(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public Optional<Resource> getAsResourceInherited(final String propertyName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource
-            .getAsResourceInherited(propertyName));
+    public Optional<VeneeredResource> getAsResourceInherited(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsResourceInherited(propertyName));
     }
 
     @Override
-    public List<Resource> getAsResourceListInherited(final String propertyName) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsResourceListInherited(propertyName))
+    public List<VeneeredResource> getAsResourceListInherited(final String propertyName) {
+        return getContentResource()
+            .map(resource -> resource.getAsResourceListInherited(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
     public <AdapterType> Optional<AdapterType> getAsTypeInherited(final String propertyName,
         final Class<AdapterType> type) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource
-            .getAsTypeInherited(propertyName, type));
+        return getContentResource().flatMap(resource -> resource.getAsTypeInherited(propertyName, type));
     }
 
     @Override
     public <AdapterType> List<AdapterType> getAsTypeListInherited(final String propertyName,
         final Class<AdapterType> type) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsTypeListInherited(propertyName, type))
+        return getContentResource()
+            .map(resource -> resource.getAsTypeListInherited(propertyName, type))
             .orElse(Collections.emptyList());
     }
 
@@ -295,60 +262,44 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
 
     @Override
     public String getHref() {
-        return getHref(false);
-    }
-
-    @Override
-    public String getHref(final boolean mapped) {
-        return getLink(mapped).getHref();
+        return getLink().getHref();
     }
 
     @Override
     public Link getLink() {
-        return getLink(false);
-    }
-
-    @Override
-    public Link getLink(final boolean mapped) {
-        return getLinkBuilder(mapped).build();
+        return getLinkBuilder().build();
     }
 
     @Override
     public LinkBuilder getLinkBuilder() {
-        return getLinkBuilder(false);
-    }
-
-    @Override
-    public LinkBuilder getLinkBuilder(final boolean mapped) {
-        return LinkBuilderFactory.forPage(this, mapped, TitleType.TITLE);
+        return LinkBuilderFactory.forPage(this, TitleType.TITLE);
     }
 
     @Override
     public Optional<String> getImageReferenceInherited(final boolean isSelf) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource
-            .getImageReferenceInherited(isSelf));
+        return getContentResource().flatMap(resource -> resource.getImageReferenceInherited(isSelf));
     }
 
     @Override
     public Optional<String> getImageReferenceInherited() {
-        return getVeneeredResource().flatMap(Inheritable :: getImageReferenceInherited);
+        return getContentResource().flatMap(Inheritable :: getImageReferenceInherited);
     }
 
     @Override
     public Optional<String> getImageReferenceInherited(final String name) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getImageReferenceInherited(name));
+        return getContentResource().flatMap(resource -> resource.getImageReferenceInherited(name));
     }
 
     @Override
     public <T> T getInherited(final String propertyName, final T defaultValue) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getInherited(propertyName, defaultValue))
+        return getContentResource()
+            .map(resource -> resource.getInherited(propertyName, defaultValue))
             .orElse(defaultValue);
     }
 
     @Override
     public <T> Optional<T> getInherited(final String propertyName, final Class<T> type) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getInherited(propertyName, type));
+        return getContentResource().flatMap(resource -> resource.getInherited(propertyName, type));
     }
 
     @Override
@@ -358,129 +309,121 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
 
     @Override
     public List<Tag> getTagsInherited(final String propertyName) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getTagsInherited(propertyName))
+        return getContentResource()
+            .map(resource -> resource.getTagsInherited(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public Optional<VeneeredResource> getVeneeredResourceInherited(final String relativePath) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource
-            .getVeneeredResourceInherited(relativePath));
+    public Optional<VeneeredResource> getResourceInherited(final String relativePath) {
+        return getContentResource().flatMap(resource -> resource.getResourceInherited(relativePath));
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited() {
-        return getVeneeredResource()
-            .map(Inheritable :: getVeneeredResourcesInherited)
+    public List<VeneeredResource> getResourcesInherited() {
+        return getContentResource()
+            .map(Inheritable :: getResourcesInherited)
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final Predicate<VeneeredResource> predicate) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getVeneeredResourcesInherited(predicate))
+    public List<VeneeredResource> getResourcesInherited(final Predicate<VeneeredResource> predicate) {
+        return getContentResource()
+            .map(resource -> resource.getResourcesInherited(predicate))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getVeneeredResourcesInherited(relativePath))
+    public List<VeneeredResource> getResourcesInherited(final String relativePath) {
+        return getContentResource()
+            .map(resource -> resource.getResourcesInherited(relativePath))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public List<VeneeredResource> getVeneeredResourcesInherited(final String relativePath,
+    public List<VeneeredResource> getResourcesInherited(final String relativePath,
         final Predicate<VeneeredResource> predicate) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getVeneeredResourcesInherited(relativePath, predicate))
+        return getContentResource()
+            .map(resource -> resource.getResourcesInherited(relativePath, predicate))
             .orElse(Collections.emptyList());
     }
 
     @Override
     public Optional<Link> getAsLink(final String propertyName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsLink(propertyName));
+        return getContentResource().flatMap(resource -> resource.getAsLink(propertyName));
     }
 
     @Override
-    public Optional<Link> getAsLink(final String propertyName, final boolean strict) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsLink(propertyName, strict));
-    }
-
-    @Override
-    public Optional<Link> getAsLink(final String propertyName, final boolean strict, final boolean mapped) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource
-            .getAsLink(propertyName, strict, mapped));
+    public Optional<LinkBuilder> getAsLinkBuilder(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsLinkBuilder(propertyName));
     }
 
     @Override
     public <T> List<T> getAsList(final String propertyName, final Class<T> type) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsList(propertyName, type))
+        return getContentResource()
+            .map(resource -> resource.getAsList(propertyName, type))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public Optional<VeneeredPage> getAsVeneeredPage(final String propertyName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsVeneeredPage(propertyName));
+    public Optional<VeneeredPage> getAsPage(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsPage(propertyName));
     }
 
     @Override
-    public List<VeneeredPage> getAsVeneeredPageList(final String propertyName) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsVeneeredPageList(propertyName))
+    public List<VeneeredPage> getAsPageList(final String propertyName) {
+        return getContentResource()
+            .map(resource -> resource.getAsPageList(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
-    public Optional<Resource> getAsResource(final String propertyName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsResource(propertyName));
+    public Optional<VeneeredResource> getAsResource(final String propertyName) {
+        return getContentResource().flatMap(resource -> resource.getAsResource(propertyName));
     }
 
     @Override
-    public List<Resource> getAsResourceList(final String propertyName) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsResourceList(propertyName))
+    public List<VeneeredResource> getAsResourceList(final String propertyName) {
+        return getContentResource()
+            .map(resource -> resource.getAsResourceList(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
     public <AdapterType> Optional<AdapterType> getAsType(final String propertyName, final Class<AdapterType> type) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getAsType(propertyName, type));
+        return getContentResource().flatMap(resource -> resource.getAsType(propertyName, type));
     }
 
     @Override
     public <AdapterType> List<AdapterType> getAsTypeList(final String propertyName, final Class<AdapterType> type) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getAsTypeList(propertyName, type))
+        return getContentResource()
+            .map(resource -> resource.getAsTypeList(propertyName, type))
             .orElse(Collections.emptyList());
     }
 
     @Override
     public Optional<String> getImageReference(final boolean isSelf) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getImageReference(isSelf));
+        return getContentResource().flatMap(resource -> resource.getImageReference(isSelf));
     }
 
     @Override
     public Optional<String> getImageReference() {
-        return getVeneeredResource().flatMap(Accessible :: getImageReference);
+        return getContentResource().flatMap(Accessible :: getImageReference);
     }
 
     @Override
     public Optional<String> getImageReference(final String name) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getImageReference(name));
+        return getContentResource().flatMap(resource -> resource.getImageReference(name));
     }
 
     @Override
     public Optional<String> getImageRendition(final String renditionName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getImageRendition(renditionName));
+        return getContentResource().flatMap(resource -> resource.getImageRendition(renditionName));
     }
 
     @Override
     public Optional<String> getImageRendition(final String name, final String renditionName) {
-        return getVeneeredResource().flatMap(veneeredResource -> veneeredResource.getImageRendition(name,
-            renditionName));
+        return getContentResource().flatMap(resource -> resource.getImageRendition(name, renditionName));
     }
 
     @Override
@@ -490,19 +433,19 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
 
     @Override
     public List<Tag> getTags(final String propertyName) {
-        return getVeneeredResource()
-            .map(veneeredResource -> veneeredResource.getTags(propertyName))
+        return getContentResource()
+            .map(resource -> resource.getTags(propertyName))
             .orElse(Collections.emptyList());
     }
 
     @Override
     public boolean isHasImage() {
-        return getVeneeredResource().map(Accessible :: isHasImage).orElse(false);
+        return getContentResource().map(Accessible :: isHasImage).orElse(false);
     }
 
     @Override
     public boolean isHasImage(final String name) {
-        return getVeneeredResource().map(veneeredResource -> veneeredResource.isHasImage(name)).orElse(false);
+        return getContentResource().map(resource -> resource.isHasImage(name)).orElse(false);
     }
 
     @Override
@@ -535,12 +478,12 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     }
 
     @Override
-    public Optional<VeneeredResource> getVeneeredResource() {
+    public Optional<VeneeredResource> getContentResource() {
         return veneeredResource;
     }
 
     @Override
-    public Optional<VeneeredResource> getVeneeredResource(final String relativePath) {
+    public Optional<VeneeredResource> getContentResource(final String relativePath) {
         return Optional.ofNullable(delegate.getContentResource(relativePath))
             .map(resource -> resource.adaptTo(VeneeredResource.class));
     }
@@ -551,28 +494,13 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     }
 
     @Override
-    public Link getLink(final TitleType titleType, final boolean mapped) {
-        return getLinkBuilder(titleType, mapped).build();
-    }
-
-    @Override
     public LinkBuilder getLinkBuilder(final TitleType titleType) {
-        return getLinkBuilder(titleType, false);
-    }
-
-    @Override
-    public LinkBuilder getLinkBuilder(final TitleType titleType, final boolean mapped) {
-        return LinkBuilderFactory.forPage(this, mapped, titleType);
+        return LinkBuilderFactory.forPage(this, titleType);
     }
 
     @Override
     public Link getNavigationLink(final boolean isActive) {
-        return getNavigationLink(isActive, false);
-    }
-
-    @Override
-    public Link getNavigationLink(final boolean isActive, final boolean mapped) {
-        return LinkBuilderFactory.forPage(this, mapped, TitleType.NAVIGATION_TITLE)
+        return LinkBuilderFactory.forPage(this, TitleType.NAVIGATION_TITLE)
             .setActive(isActive)
             .build();
     }
@@ -609,7 +537,7 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
     }
 
     @Override
-    public VeneeredPageManager getVeneeredPageManager() {
+    public VeneeredPageManager getPageManager() {
         return delegate.getContentResource().getResourceResolver().adaptTo(VeneeredPageManager.class);
     }
 
@@ -626,7 +554,7 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
         VeneeredPage ancestorPage = null;
 
         while (page != null) {
-            final Optional<VeneeredResource> optionalVeneeredResource = page.getVeneeredResource();
+            final Optional<VeneeredResource> optionalVeneeredResource = page.getContentResource();
 
             if (optionalVeneeredResource.isPresent() && predicate.test(optionalVeneeredResource.get())) {
                 ancestorPage = page;

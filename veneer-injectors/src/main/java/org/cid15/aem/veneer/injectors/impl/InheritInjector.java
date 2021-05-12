@@ -35,7 +35,7 @@ public final class InheritInjector extends AbstractVeneeredResourceInjector
             if (InjectorUtils.isParameterizedListType(declaredType)) {
                 final Class<?> typeClass = InjectorUtils.getActualType((ParameterizedType) declaredType);
 
-                value = veneeredResource.getVeneeredResourcesInherited(name)
+                value = veneeredResource.getResourcesInherited(name)
                     .stream()
                     .map(cr -> cr.getResource().adaptTo(typeClass))
                     .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public final class InheritInjector extends AbstractVeneeredResourceInjector
                 value = veneeredResource.getInherited(name, (Class) declaredType).orElse(null);
 
                 if (value == null) {
-                    value = veneeredResource.getVeneeredResourceInherited(name)
+                    value = veneeredResource.getResourceInherited(name)
                         .map(VeneeredResource :: getResource)
                         .map(resource -> resource.adaptTo((Class) declaredType))
                         .orElse(null);

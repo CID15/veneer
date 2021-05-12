@@ -75,20 +75,6 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
         "externalPath"  | "http://www.reddit.com"
     }
 
-    def "get as href strict"() {
-        setup:
-        def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
-
-        expect:
-        veneeredResource.getAsHref(propertyName, true).get() == href
-
-        where:
-        propertyName          | href
-        "otherPagePath"       | "/content/ales/esb.html"
-        "nonExistentPagePath" | "/content/home"
-        "externalPath"        | "http://www.reddit.com"
-    }
-
     def "get as href returns absent where appropriate"() {
         setup:
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
@@ -100,26 +86,14 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
         propertyName << ["beer", ""]
     }
 
-    def "get as mapped href"() {
+    def "get as href mapped"() {
         setup:
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getAsHref("otherPagePath", false, true).get() == "/ales/esb.html"
-    }
-
-    def "get as mapped href strict"() {
-        setup:
-        def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
-
-        expect:
-        veneeredResource.getAsHref(propertyName, true, true).get() == href
-
-        where:
-        propertyName          | href
-        "otherPagePath"       | "/ales/esb.html"
-        "nonExistentPagePath" | "/home"
-        "externalPath"        | "http://www.reddit.com"
+        veneeredResource.getAsLinkBuilder("otherPagePath")
+            .map { builder -> builder.mapped(resourceResolver).build().href }
+            .orElse(null) == "/ales/esb.html"
     }
 
     def "get as href for null"() {
@@ -138,34 +112,15 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
         link.path == "/content/ales/esb"
     }
 
-    def "get as link strict"() {
+    def "get as link mapped"() {
         setup:
-        def link = getVeneeredResource("/content/cid15/jcr:content").getAsLink("nonExistentPagePath", true).get()
-
-        expect:
-        link.path == "/content/home"
-        link.external
-        !link.extension.present
-    }
-
-    def "get as mapped link"() {
-        setup:
-        def link = getVeneeredResource("/content/cid15/jcr:content").getAsLink("otherPagePath", false, true).get()
+        def link = getVeneeredResource("/content/cid15/jcr:content").getAsLinkBuilder("otherPagePath")
+            .map { builder -> builder.mapped(resourceResolver).build() }
+            .get()
 
         expect:
         link.path == "/content/ales/esb"
         link.href == "/ales/esb.html"
-    }
-
-    def "get as mapped link strict"() {
-        setup:
-        def link = getVeneeredResource("/content/cid15/jcr:content").getAsLink("nonExistentPagePath", true,
-            true).get()
-
-        expect:
-        link.path == "/home"
-        link.external
-        !link.extension.present
     }
 
     def "get as link for null"() {
@@ -184,13 +139,29 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
         !linkOptional.present
     }
 
+    def "get as link builder"() {
+        setup:
+        def link = getVeneeredResource("/content/cid15/jcr:content").getAsLinkBuilder("otherPagePath")
+            .map { builder -> builder.mapped(mapped ? resourceResolver : null).build() }
+            .get()
+
+        expect:
+        link.path == "/content/ales/esb"
+        link.href == href
+
+        where:
+        mapped | href
+        false  | "/content/ales/esb.html"
+        true   | "/ales/esb.html"
+    }
+
     def "get as page"() {
         setup:
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getAsVeneeredPage("otherPagePath").get().path == "/content/ales/esb"
-        !veneeredResource.getAsVeneeredPage("nonExistentProperty").present
+        veneeredResource.getAsPage("otherPagePath").get().path == "/content/ales/esb"
+        !veneeredResource.getAsPage("nonExistentProperty").present
     }
 
     def "get as page list"() {
@@ -198,7 +169,7 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/content/ales/esb/jcr:content")
 
         expect:
-        veneeredResource.getAsVeneeredPageList(propertyName).size() == size
+        veneeredResource.getAsPageList(propertyName).size() == size
 
         where:
         propertyName          | size

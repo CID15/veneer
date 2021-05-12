@@ -69,22 +69,22 @@ class DefaultVeneeredPageManagerSpec extends VeneerSpec {
         }
 
         expect:
-        veneeredPageManager.findVeneeredPages("/content/hierarchy", predicate).size() == 3
+        veneeredPageManager.findPages("/content/hierarchy", predicate).size() == 3
     }
 
     def "find pages for tag IDs"() {
         expect:
-        veneeredPageManager.findVeneeredPages("/content", ["/content/cq:tags/tag1"], true).size() == 2
+        veneeredPageManager.findPages("/content", ["/content/cq:tags/tag1"], true).size() == 2
     }
 
     def "find pages for tag IDs matching all"() {
         expect:
-        veneeredPageManager.findVeneeredPages("/content", ["/content/cq:tags/tag1", "/content/cq:tags/tag2"], false).size() == 1
+        veneeredPageManager.findPages("/content", ["/content/cq:tags/tag1", "/content/cq:tags/tag2"], false).size() == 1
     }
 
     def "tagged non-page node is excluded from search results"() {
         expect:
-        !veneeredPageManager.findVeneeredPages("/content", ["/content/cq:tags/tag3"], true)
+        !veneeredPageManager.findPages("/content", ["/content/cq:tags/tag3"], true)
     }
 
     def "search"() {
@@ -107,16 +107,16 @@ class DefaultVeneeredPageManagerSpec extends VeneerSpec {
 
     def "find pages for template"() {
         expect:
-        veneeredPageManager.findVeneeredPages("/content", "template").size() == 2
+        veneeredPageManager.findPages("/content", "template").size() == 2
     }
 
     def "find pages for non-existing template"() {
         expect:
-        !veneeredPageManager.findVeneeredPages("/content", "ghost")
+        !veneeredPageManager.findPages("/content", "ghost")
     }
 
     def "find pages for template with invalid starting path"() {
         expect:
-        !veneeredPageManager.findVeneeredPages("/etc", "template")
+        !veneeredPageManager.findPages("/etc", "template")
     }
 }

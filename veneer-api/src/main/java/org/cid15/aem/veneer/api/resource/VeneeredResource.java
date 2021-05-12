@@ -7,6 +7,7 @@ import org.cid15.aem.veneer.api.Accessible;
 import org.cid15.aem.veneer.api.Inheritable;
 import org.cid15.aem.veneer.api.Linkable;
 import org.cid15.aem.veneer.api.Traversable;
+import org.cid15.aem.veneer.api.page.VeneeredPage;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,14 +78,14 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      * @param relativePath relative path to component
      * @return <code>Optional</code> resource for component
      */
-    Optional<VeneeredResource> getVeneeredResource(String relativePath);
+    Optional<VeneeredResource> getResource(String relativePath);
 
     /**
      * Get a list of child resources for the current resource.
      *
      * @return list of veneered resources or empty list if none exist
      */
-    List<VeneeredResource> getVeneeredResources();
+    List<VeneeredResource> getResources();
 
     /**
      * Get a predicate-filtered list of child resources for the current resource.
@@ -92,7 +93,7 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      * @param predicate predicate used to filter resources
      * @return list of veneered resources that meet the predicate criteria or empty list if none exist
      */
-    List<VeneeredResource> getVeneeredResources(Predicate<VeneeredResource> predicate);
+    List<VeneeredResource> getResources(Predicate<VeneeredResource> predicate);
 
     /**
      * Get a list of child resources for the resource at the given path relative to this resource.
@@ -100,7 +101,7 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      * @param relativePath relative path to parent of desired resources
      * @return list of veneered resources below the specified relative path or empty list if none exist
      */
-    List<VeneeredResource> getVeneeredResources(String relativePath);
+    List<VeneeredResource> getResources(String relativePath);
 
     /**
      * Get a list of child resources for the resource at the given path relative to this resource, returning only the
@@ -111,7 +112,7 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      * @return list of veneered resources matching the given resource type below the specified relative path or empty
      * list if none exist
      */
-    List<VeneeredResource> getVeneeredResources(String relativePath, String resourceType);
+    List<VeneeredResource> getResources(String relativePath, String resourceType);
 
     /**
      * Get a list of child resources for the resource at the given path relative to this resource, returning only the
@@ -122,7 +123,7 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      * @return list of veneered resources that meet the predicate criteria below the specified relative path or empty
      * list if none exist
      */
-    List<VeneeredResource> getVeneeredResources(String relativePath, Predicate<VeneeredResource> predicate);
+    List<VeneeredResource> getResources(String relativePath, Predicate<VeneeredResource> predicate);
 
     /**
      * Get the parent of this resource.
@@ -130,4 +131,11 @@ public interface VeneeredResource extends Linkable, Accessible, Inheritable, Tra
      * @return parent veneered resource or absent optional if resource has no parent
      */
     VeneeredResource getParent();
+
+    /**
+     * Get the page containing this resource.
+     *
+     * @return optional containing page
+     */
+    Optional<VeneeredPage> getContainingPage();
 }

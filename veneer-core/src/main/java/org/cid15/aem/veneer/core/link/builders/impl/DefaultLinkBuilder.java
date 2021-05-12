@@ -33,27 +33,27 @@ public final class DefaultLinkBuilder implements LinkBuilder {
 
     private final String path;
 
-    private final ResourceResolver resourceResolver;
-
     private final Map<String, String> properties = new HashMap<>();
 
     private final List<String> selectors = new ArrayList<>();
 
     private final List<Link> children = new ArrayList<>();
 
-    // initialized with default values
+    // mutable properties
 
-    private String fragment = null;
+    private ResourceResolver resourceResolver;
+
+    private String fragment;
 
     private boolean external;
 
     private boolean active = false;
 
-    private String extension = null;
+    private String extension;
 
-    private String host = null;
+    private String host;
 
-    private String scheme = null;
+    private String scheme;
 
     private boolean opaque = false;
 
@@ -61,15 +61,16 @@ public final class DefaultLinkBuilder implements LinkBuilder {
 
     private boolean secure = false;
 
-    private String suffix = null;
+    private String suffix;
 
     private String target = LinkTarget.SELF.getTarget();
 
     private String title = "";
 
-    public DefaultLinkBuilder(final String path, final ResourceResolver resourceResolver) {
+    private boolean noExtension = false;
+
+    public DefaultLinkBuilder(final String path) {
         this.path = path;
-        this.resourceResolver = resourceResolver;
 
         external = PathUtils.isExternal(path);
     }
@@ -84,7 +85,7 @@ public final class DefaultLinkBuilder implements LinkBuilder {
 
         String extension = this.extension;
 
-        if (!external) {
+        if (!external && !noExtension) {
             if (path.contains(PathConstants.SELECTOR)) {
                 extension = path.substring(path.indexOf(PathConstants.SELECTOR) + 1);
             } else {
@@ -99,7 +100,7 @@ public final class DefaultLinkBuilder implements LinkBuilder {
         if (resourceResolver != null) {
             builder.append(resourceResolver.map(mappable.toString()));
         } else {
-            builder.append(mappable.toString());
+            builder.append(mappable);
         }
 
         if (suffix != null) {
@@ -125,6 +126,13 @@ public final class DefaultLinkBuilder implements LinkBuilder {
         LOG.debug("returning link : {}", link);
 
         return link;
+    }
+
+    @Override
+    public LinkBuilder mapped(final ResourceResolver resourceResolver) {
+        this.resourceResolver = resourceResolver;
+
+        return this;
     }
 
     @Override
@@ -193,6 +201,13 @@ public final class DefaultLinkBuilder implements LinkBuilder {
     @Override
     public LinkBuilder setExtension(final String extension) {
         this.extension = extension;
+
+        return this;
+    }
+
+    @Override
+    public LinkBuilder noExtension() {
+        noExtension = true;
 
         return this;
     }
@@ -311,19 +326,17 @@ public final class DefaultLinkBuilder implements LinkBuilder {
         if (!parameters.isEmpty()) {
             final StringBuilder builder = new StringBuilder("?");
 
-            parameters.keySet().forEach(name -> {
-                parameters.get(name).forEach(value -> {
-                    try {
-                        builder.append(URLEncoder.encode(name, StandardCharsets.UTF_8.name()));
-                        builder.append('=');
-                        builder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));
-                    } catch (UnsupportedEncodingException uee) {
-                        LOG.error("invalid encoding for parameter :" + name + "=" + value, uee);
-                    }
+            parameters.keySet().forEach(name -> parameters.get(name).forEach(value -> {
+                try {
+                    builder.append(URLEncoder.encode(name, StandardCharsets.UTF_8.name()));
+                    builder.append('=');
+                    builder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));
+                } catch (UnsupportedEncodingException uee) {
+                    LOG.error("invalid encoding for parameter :" + name + "=" + value, uee);
+                }
 
-                    builder.append('&');
-                });
-            });
+                builder.append('&');
+            }));
 
             builder.deleteCharAt(builder.length() - 1);
 

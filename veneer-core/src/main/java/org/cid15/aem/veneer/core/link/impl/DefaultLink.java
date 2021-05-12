@@ -37,9 +37,18 @@ public final class DefaultLink implements Link {
 
     private final List<Link> children;
 
-    public DefaultLink(final String path, final String extension, final String suffix, final String href,
-        final List<String> selectors, final String queryString, final String fragment, final boolean external,
-        final String target, final String title, final Map<String, String> properties, final boolean active,
+    public DefaultLink(final String path,
+        final String extension,
+        final String suffix,
+        final String href,
+        final List<String> selectors,
+        final String queryString,
+        final String fragment,
+        final boolean external,
+        final String target,
+        final String title,
+        final Map<String, String> properties,
+        final boolean active,
         final List<Link> children) {
         this.path = path;
         this.extension = extension;

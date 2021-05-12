@@ -163,10 +163,10 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource("/content/ales/esb/lace/jcr:content")
 
         expect:
-        veneeredResource.getAsVeneeredPageInherited("otherPagePath").get().path == "/content/cid15"
+        veneeredResource.getAsPageInherited("otherPagePath").get().path == "/content/cid15"
 
         and:
-        !veneeredResource.getAsVeneeredPageInherited("nonExistentPagePath").present
+        !veneeredResource.getAsPageInherited("nonExistentPagePath").present
     }
 
     def "get as page list inherited"() {
@@ -174,10 +174,10 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource(path)
 
         expect:
-        veneeredResource.getAsVeneeredPageListInherited("pagePaths").size() == size
+        veneeredResource.getAsPageListInherited("pagePaths").size() == size
 
         and:
-        veneeredResource.getAsVeneeredPageListInherited("nonExistentPagePath").empty
+        veneeredResource.getAsPageListInherited("nonExistentPagePath").empty
 
         where:
         path                                 | size
@@ -191,7 +191,7 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource(path)
 
         expect:
-        veneeredResource.getVeneeredResourceInherited("child1").get().path == inheritedNodePath
+        veneeredResource.getResourceInherited("child1").get().path == inheritedNodePath
 
         where:
         path                                                       | inheritedNodePath
@@ -201,7 +201,7 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
 
     def "get component resource inherited is absent when ancestor not found"() {
         expect:
-        !getVeneeredResource("/content/ales/esb/jcr:content").getVeneeredResourceInherited("child1").present
+        !getVeneeredResource("/content/ales/esb/jcr:content").getResourceInherited("child1").present
     }
 
     def "get component resources inherited"() {
@@ -209,7 +209,7 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource(path)
 
         expect:
-        veneeredResource.veneeredResourcesInherited.size() == size
+        veneeredResource.resourcesInherited.size() == size
 
         where:
         path                                                       | size
@@ -231,7 +231,7 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
         }
 
         expect:
-        veneeredResource.getVeneeredResourcesInherited(predicate).size() == size
+        veneeredResource.getResourcesInherited(predicate).size() == size
 
         where:
         path                                                       | size
@@ -245,7 +245,7 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
         def veneeredResource = getVeneeredResource(path)
 
         expect:
-        veneeredResource.getVeneeredResourcesInherited("container").size() == size
+        veneeredResource.getResourcesInherited("container").size() == size
 
         where:
         path                                             | size
@@ -267,7 +267,7 @@ class InheritableSpec extends AbstractVeneeredResourceSpec {
         }
 
         expect:
-        veneeredResource.getVeneeredResourcesInherited("container", predicate).size() == size
+        veneeredResource.getResourcesInherited("container", predicate).size() == size
 
         where:
         path                                             | size

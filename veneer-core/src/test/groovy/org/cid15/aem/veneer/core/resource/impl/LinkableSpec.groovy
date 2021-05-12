@@ -23,12 +23,12 @@ class LinkableSpec extends AbstractVeneeredResourceSpec {
         veneeredResource.href == "/content/cid15/jcr:content.html"
     }
 
-    def "get mapped href"() {
+    def "get href mapped"() {
         setup:
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getHref(mapped) == href
+        veneeredResource.getLinkBuilder().mapped(mapped ? resourceResolver : null).build().getHref() == href
 
         where:
         mapped | href
@@ -44,12 +44,12 @@ class LinkableSpec extends AbstractVeneeredResourceSpec {
         veneeredResource.link.path == "/content/cid15/jcr:content"
     }
 
-    def "get mapped link"() {
+    def "get link mapped"() {
         setup:
         def veneeredResource = getVeneeredResource("/content/cid15/jcr:content")
 
         expect:
-        veneeredResource.getLink(mapped).path == path
+        veneeredResource.getLinkBuilder().mapped(mapped ? resourceResolver : null).build().path == path
 
         where:
         mapped | path
