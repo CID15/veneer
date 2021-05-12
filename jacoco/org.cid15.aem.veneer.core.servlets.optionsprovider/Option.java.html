@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Option.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Veneer Core</a> &gt; <a href="index.source.html" class="el_package">org.cid15.aem.veneer.core.servlets.optionsprovider</a> &gt; <span class="el_source">Option.java</span></div><h1>Option.java</h1><pre class="source lang-java linenums">package org.cid15.aem.veneer.core.servlets.optionsprovider;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -11,39 +14,49 @@ import java.util.stream.Collectors;
  */
 public final class Option {
 
-<span class="fc" id="L14">    public static final Option EMPTY = new Option(&quot;&quot;, &quot;&quot;);</span>
+<span class="fc" id="L17">    public static final Option EMPTY = new Option(&quot;&quot;, &quot;&quot;);</span>
 
-<span class="fc" id="L16">    public static final Comparator&lt;Option&gt; ALPHA = Comparator.comparing(Option :: getText);</span>
+<span class="fc" id="L19">    public static final Comparator&lt;Option&gt; ALPHA = Comparator.comparing(Option :: getText);</span>
 
-<span class="fc" id="L18">    public static final Comparator&lt;Option&gt; ALPHA_IGNORE_CASE = (option1, option2) -&gt; option1.getText()</span>
-<span class="fc" id="L19">        .compareToIgnoreCase(option2.getText());</span>
+<span class="fc" id="L21">    public static final Comparator&lt;Option&gt; ALPHA_IGNORE_CASE = (option1, option2) -&gt; option1.getText()</span>
+<span class="fc" id="L22">        .compareToIgnoreCase(option2.getText());</span>
 
     /**
      * @param map map where key=[option value] and value=[option text]
      * @return list of options for map
      */
     public static List&lt;Option&gt; fromMap(final Map&lt;String, String&gt; map) {
-<span class="fc" id="L26">        return map.entrySet()</span>
-<span class="fc" id="L27">            .stream()</span>
-<span class="fc" id="L28">            .map(entry -&gt; new Option(entry.getKey(), entry.getValue()))</span>
-<span class="fc" id="L29">            .collect(Collectors.toList());</span>
+<span class="fc" id="L29">        return map.entrySet()</span>
+<span class="fc" id="L30">            .stream()</span>
+<span class="fc" id="L31">            .map(entry -&gt; new Option(entry.getKey(), entry.getValue()))</span>
+<span class="fc" id="L32">            .collect(Collectors.toList());</span>
     }
 
     private final String value;
 
     private final String text;
 
-<span class="fc" id="L36">    public Option(final String value, final String text) {</span>
-<span class="fc" id="L37">        this.value = value;</span>
-<span class="fc" id="L38">        this.text = text;</span>
-<span class="fc" id="L39">    }</span>
+<span class="fc" id="L39">    public Option(final String value, final String text) {</span>
+<span class="fc" id="L40">        this.value = value;</span>
+<span class="fc" id="L41">        this.text = text;</span>
+<span class="fc" id="L42">    }</span>
 
     public String getText() {
-<span class="fc" id="L42">        return text;</span>
+<span class="fc" id="L45">        return text;</span>
     }
 
     public String getValue() {
-<span class="fc" id="L46">        return value;</span>
+<span class="fc" id="L49">        return value;</span>
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+<span class="nc" id="L54">        return EqualsBuilder.reflectionEquals(this, other);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L59">        return HashCodeBuilder.reflectionHashCode(this);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

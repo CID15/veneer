@@ -33,27 +33,27 @@ public final class DefaultLinkBuilder implements LinkBuilder {
 
     private final String path;
 
-    private final ResourceResolver resourceResolver;
+<span class="fc" id="L36">    private final Map&lt;String, String&gt; properties = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L38">    private final Map&lt;String, String&gt; properties = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L38">    private final List&lt;String&gt; selectors = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L40">    private final List&lt;String&gt; selectors = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L40">    private final List&lt;Link&gt; children = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L42">    private final List&lt;Link&gt; children = new ArrayList&lt;&gt;();</span>
+    // mutable properties
 
-    // initialized with default values
+    private ResourceResolver resourceResolver;
 
-<span class="fc" id="L46">    private String fragment = null;</span>
+    private String fragment;
 
     private boolean external;
 
 <span class="fc" id="L50">    private boolean active = false;</span>
 
-<span class="fc" id="L52">    private String extension = null;</span>
+    private String extension;
 
-<span class="fc" id="L54">    private String host = null;</span>
+    private String host;
 
-<span class="fc" id="L56">    private String scheme = null;</span>
+    private String scheme;
 
 <span class="fc" id="L58">    private boolean opaque = false;</span>
 
@@ -61,289 +61,302 @@ public final class DefaultLinkBuilder implements LinkBuilder {
 
 <span class="fc" id="L62">    private boolean secure = false;</span>
 
-<span class="fc" id="L64">    private String suffix = null;</span>
+    private String suffix;
 
 <span class="fc" id="L66">    private String target = LinkTarget.SELF.getTarget();</span>
 
 <span class="fc" id="L68">    private String title = &quot;&quot;;</span>
 
-<span class="fc" id="L70">    public DefaultLinkBuilder(final String path, final ResourceResolver resourceResolver) {</span>
-<span class="fc" id="L71">        this.path = path;</span>
-<span class="fc" id="L72">        this.resourceResolver = resourceResolver;</span>
+<span class="fc" id="L70">    private boolean noExtension = false;</span>
 
-<span class="fc" id="L74">        external = PathUtils.isExternal(path);</span>
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L72">    public DefaultLinkBuilder(final String path) {</span>
+<span class="fc" id="L73">        this.path = path;</span>
+
+<span class="fc" id="L75">        external = PathUtils.isExternal(path);</span>
+<span class="fc" id="L76">    }</span>
 
     @Override
     public Link build() {
-<span class="fc" id="L79">        final StringBuilder builder = new StringBuilder().append(buildHost());</span>
+<span class="fc" id="L80">        final StringBuilder builder = new StringBuilder().append(buildHost());</span>
 
-<span class="fc" id="L81">        final StringBuilder mappable = new StringBuilder()</span>
-<span class="fc" id="L82">            .append(path)</span>
-<span class="fc" id="L83">            .append(buildSelectors());</span>
+<span class="fc" id="L82">        final StringBuilder mappable = new StringBuilder()</span>
+<span class="fc" id="L83">            .append(path)</span>
+<span class="fc" id="L84">            .append(buildSelectors());</span>
 
-<span class="fc" id="L85">        String extension = this.extension;</span>
+<span class="fc" id="L86">        String extension = this.extension;</span>
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (!external) {</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (path.contains(PathConstants.SELECTOR)) {</span>
-<span class="fc" id="L89">                extension = path.substring(path.indexOf(PathConstants.SELECTOR) + 1);</span>
-<span class="fc" id="L90">            } else {</span>
-<span class="fc" id="L91">                extension = Optional.ofNullable(this.extension).orElse(PathConstants.EXTENSION_HTML);</span>
+<span class="fc bfc" id="L88" title="All 4 branches covered.">        if (!external &amp;&amp; !noExtension) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            if (path.contains(PathConstants.SELECTOR)) {</span>
+<span class="fc" id="L90">                extension = path.substring(path.indexOf(PathConstants.SELECTOR) + 1);</span>
+<span class="fc" id="L91">            } else {</span>
+<span class="fc" id="L92">                extension = Optional.ofNullable(this.extension).orElse(PathConstants.EXTENSION_HTML);</span>
 
-<span class="fc bfc" id="L93" title="All 2 branches covered.">                if (StringUtils.isNotEmpty(extension)) {</span>
-<span class="fc" id="L94">                    mappable.append('.').append(extension);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">                if (StringUtils.isNotEmpty(extension)) {</span>
+<span class="fc" id="L95">                    mappable.append('.').append(extension);</span>
                 }
             }
         }
 
-<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (resourceResolver != null) {</span>
-<span class="fc" id="L100">            builder.append(resourceResolver.map(mappable.toString()));</span>
-<span class="fc" id="L101">        } else {</span>
-<span class="fc" id="L102">            builder.append(mappable.toString());</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (resourceResolver != null) {</span>
+<span class="fc" id="L101">            builder.append(resourceResolver.map(mappable.toString()));</span>
+<span class="fc" id="L102">        } else {</span>
+<span class="fc" id="L103">            builder.append(mappable);</span>
         }
 
-<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (suffix != null) {</span>
-<span class="fc" id="L106">            builder.append(suffix);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (suffix != null) {</span>
+<span class="fc" id="L107">            builder.append(suffix);</span>
         }
 
-<span class="fc" id="L109">        final String queryString = buildQueryString();</span>
+<span class="fc" id="L110">        final String queryString = buildQueryString();</span>
 
-<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (queryString != null) {</span>
-<span class="fc" id="L112">            builder.append(queryString);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (queryString != null) {</span>
+<span class="fc" id="L113">            builder.append(queryString);</span>
         }
 
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        if (fragment != null) {</span>
-<span class="nc" id="L116">            builder.append(&quot;#&quot;);</span>
-<span class="nc" id="L117">            builder.append(fragment);</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if (fragment != null) {</span>
+<span class="nc" id="L117">            builder.append(&quot;#&quot;);</span>
+<span class="nc" id="L118">            builder.append(fragment);</span>
         }
 
-<span class="fc" id="L120">        final String href = builder.toString();</span>
+<span class="fc" id="L121">        final String href = builder.toString();</span>
 
-<span class="fc" id="L122">        final Link link = new DefaultLink(path, extension, suffix, href, selectors, queryString, fragment, external,</span>
-<span class="fc" id="L123">            target, title, properties, active, children);</span>
+<span class="fc" id="L123">        final Link link = new DefaultLink(path, extension, suffix, href, selectors, queryString, fragment, external,</span>
+<span class="fc" id="L124">            target, title, properties, active, children);</span>
 
-<span class="fc" id="L125">        LOG.debug(&quot;returning link : {}&quot;, link);</span>
+<span class="fc" id="L126">        LOG.debug(&quot;returning link : {}&quot;, link);</span>
 
-<span class="fc" id="L127">        return link;</span>
+<span class="fc" id="L128">        return link;</span>
+    }
+
+    @Override
+    public LinkBuilder mapped(final ResourceResolver resourceResolver) {
+<span class="fc" id="L133">        this.resourceResolver = resourceResolver;</span>
+
+<span class="fc" id="L135">        return this;</span>
     }
 
     @Override
     public LinkBuilder addChild(final Link child) {
-<span class="fc" id="L132">        children.add(checkNotNull(child));</span>
+<span class="fc" id="L140">        children.add(checkNotNull(child));</span>
 
-<span class="fc" id="L134">        return this;</span>
+<span class="fc" id="L142">        return this;</span>
     }
 
     @Override
     public LinkBuilder addParameter(final String name, final String value) {
-<span class="fc" id="L139">        parameters.put(checkNotNull(name), checkNotNull(value));</span>
+<span class="fc" id="L147">        parameters.put(checkNotNull(name), checkNotNull(value));</span>
 
-<span class="fc" id="L141">        return this;</span>
+<span class="fc" id="L149">        return this;</span>
     }
 
     @Override
     public LinkBuilder addParameters(final Map&lt;String, String&gt; parameters) {
-<span class="fc" id="L146">        this.parameters.putAll(Multimaps.forMap(checkNotNull(parameters)));</span>
+<span class="fc" id="L154">        this.parameters.putAll(Multimaps.forMap(checkNotNull(parameters)));</span>
 
-<span class="fc" id="L148">        return this;</span>
+<span class="fc" id="L156">        return this;</span>
     }
 
     @Override
     public LinkBuilder addParameters(final SetMultimap&lt;String, String&gt; parameters) {
-<span class="fc" id="L153">        this.parameters.putAll(checkNotNull(parameters));</span>
+<span class="fc" id="L161">        this.parameters.putAll(checkNotNull(parameters));</span>
 
-<span class="fc" id="L155">        return this;</span>
+<span class="fc" id="L163">        return this;</span>
     }
 
     @Override
     public LinkBuilder addProperties(final Map&lt;String, String&gt; properties) {
-<span class="fc" id="L160">        this.properties.putAll(checkNotNull(properties));</span>
+<span class="fc" id="L168">        this.properties.putAll(checkNotNull(properties));</span>
 
-<span class="fc" id="L162">        return this;</span>
+<span class="fc" id="L170">        return this;</span>
     }
 
     @Override
     public LinkBuilder addProperty(final String name, final String value) {
-<span class="fc" id="L167">        properties.put(checkNotNull(name), checkNotNull(value));</span>
+<span class="fc" id="L175">        properties.put(checkNotNull(name), checkNotNull(value));</span>
 
-<span class="fc" id="L169">        return this;</span>
+<span class="fc" id="L177">        return this;</span>
     }
 
     @Override
     public LinkBuilder addSelector(final String selector) {
-<span class="fc" id="L174">        selectors.add(checkNotNull(selector));</span>
+<span class="fc" id="L182">        selectors.add(checkNotNull(selector));</span>
 
-<span class="fc" id="L176">        return this;</span>
+<span class="fc" id="L184">        return this;</span>
     }
 
     @Override
     public LinkBuilder addSelectors(final List&lt;String&gt; selectors) {
-<span class="fc" id="L181">        this.selectors.addAll(checkNotNull(selectors));</span>
+<span class="fc" id="L189">        this.selectors.addAll(checkNotNull(selectors));</span>
 
-<span class="fc" id="L183">        return this;</span>
+<span class="fc" id="L191">        return this;</span>
     }
 
     @Override
     public LinkBuilder setActive(final boolean active) {
-<span class="fc" id="L188">        this.active = active;</span>
+<span class="fc" id="L196">        this.active = active;</span>
 
-<span class="fc" id="L190">        return this;</span>
+<span class="fc" id="L198">        return this;</span>
     }
 
     @Override
     public LinkBuilder setExtension(final String extension) {
-<span class="fc" id="L195">        this.extension = extension;</span>
+<span class="fc" id="L203">        this.extension = extension;</span>
 
-<span class="fc" id="L197">        return this;</span>
+<span class="fc" id="L205">        return this;</span>
+    }
+
+    @Override
+    public LinkBuilder noExtension() {
+<span class="fc" id="L210">        noExtension = true;</span>
+
+<span class="fc" id="L212">        return this;</span>
     }
 
     @Override
     public LinkBuilder setExternal(final boolean external) {
-<span class="fc" id="L202">        this.external = external;</span>
+<span class="fc" id="L217">        this.external = external;</span>
 
-<span class="fc" id="L204">        return this;</span>
+<span class="fc" id="L219">        return this;</span>
     }
 
     @Override
     public LinkBuilder setHost(final String host) {
-<span class="fc" id="L209">        this.host = host;</span>
+<span class="fc" id="L224">        this.host = host;</span>
 
-<span class="fc" id="L211">        return this;</span>
+<span class="fc" id="L226">        return this;</span>
     }
 
     @Override
     public LinkBuilder setScheme(final String scheme) {
-<span class="fc" id="L216">        this.scheme = scheme;</span>
+<span class="fc" id="L231">        this.scheme = scheme;</span>
 
-<span class="fc" id="L218">        return this;</span>
+<span class="fc" id="L233">        return this;</span>
     }
 
     @Override
     public LinkBuilder setOpaque(final boolean opaque) {
-<span class="fc" id="L223">        this.opaque = opaque;</span>
+<span class="fc" id="L238">        this.opaque = opaque;</span>
 
-<span class="fc" id="L225">        return this;</span>
+<span class="fc" id="L240">        return this;</span>
     }
 
     @Override
     public LinkBuilder setPort(final int port) {
-<span class="fc" id="L230">        this.port = port;</span>
+<span class="fc" id="L245">        this.port = port;</span>
 
-<span class="fc" id="L232">        return this;</span>
+<span class="fc" id="L247">        return this;</span>
     }
 
     @Override
     public LinkBuilder setSecure(final boolean secure) {
-<span class="fc" id="L237">        this.secure = secure;</span>
+<span class="fc" id="L252">        this.secure = secure;</span>
 
-<span class="fc" id="L239">        return this;</span>
+<span class="fc" id="L254">        return this;</span>
     }
 
     @Override
     public LinkBuilder setSuffix(final String suffix) {
-<span class="fc" id="L244">        this.suffix = suffix;</span>
+<span class="fc" id="L259">        this.suffix = suffix;</span>
 
-<span class="fc" id="L246">        return this;</span>
+<span class="fc" id="L261">        return this;</span>
     }
 
     @Override
     public LinkBuilder setTarget(final String target) {
-<span class="fc" id="L251">        this.target = target;</span>
+<span class="fc" id="L266">        this.target = target;</span>
 
-<span class="fc" id="L253">        return this;</span>
+<span class="fc" id="L268">        return this;</span>
     }
 
     @Override
     public LinkBuilder setTitle(final String title) {
-<span class="fc" id="L258">        this.title = title;</span>
+<span class="fc" id="L273">        this.title = title;</span>
 
-<span class="fc" id="L260">        return this;</span>
+<span class="fc" id="L275">        return this;</span>
     }
 
     @Override
     public LinkBuilder setFragment(final String fragment) {
-<span class="nc" id="L265">        this.fragment = fragment;</span>
+<span class="nc" id="L280">        this.fragment = fragment;</span>
 
-<span class="nc" id="L267">        return this;</span>
+<span class="nc" id="L282">        return this;</span>
     }
 
     // internals
 
     private String buildHost() {
-<span class="fc" id="L273">        final StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L288">        final StringBuilder builder = new StringBuilder();</span>
 
-<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (external) {</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        if (external) {</span>
             // ex: www.cid15.com
-<span class="fc bfc" id="L277" title="All 4 branches covered.">            if (scheme != null &amp;&amp; !path.startsWith(scheme)) {</span>
-<span class="fc" id="L278">                builder.append(scheme).append(&quot;:&quot;);</span>
+<span class="fc bfc" id="L292" title="All 4 branches covered.">            if (scheme != null &amp;&amp; !path.startsWith(scheme)) {</span>
+<span class="fc" id="L293">                builder.append(scheme).append(&quot;:&quot;);</span>
 
-<span class="fc bfc" id="L280" title="All 2 branches covered.">                if (!opaque) {</span>
-<span class="fc" id="L281">                    builder.append(&quot;//&quot;);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">                if (!opaque) {</span>
+<span class="fc" id="L296">                    builder.append(&quot;//&quot;);</span>
                 }
             }
-<span class="fc bfc" id="L284" title="All 2 branches covered.">        } else if (host != null) {</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">            if (scheme != null) {</span>
-<span class="fc" id="L286">                builder.append(scheme);</span>
-<span class="fc" id="L287">            } else {</span>
-<span class="fc bfc" id="L288" title="All 2 branches covered.">                builder.append(secure ? &quot;https&quot; : &quot;http&quot;);</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        } else if (host != null) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (scheme != null) {</span>
+<span class="fc" id="L301">                builder.append(scheme);</span>
+<span class="fc" id="L302">            } else {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">                builder.append(secure ? &quot;https&quot; : &quot;http&quot;);</span>
             }
 
-<span class="fc" id="L291">            builder.append(&quot;:&quot;);</span>
+<span class="fc" id="L306">            builder.append(&quot;:&quot;);</span>
 
-<span class="pc bpc" id="L293" title="1 of 2 branches missed.">            if (!opaque) {</span>
-<span class="fc" id="L294">                builder.append(&quot;//&quot;);</span>
+<span class="pc bpc" id="L308" title="1 of 2 branches missed.">            if (!opaque) {</span>
+<span class="fc" id="L309">                builder.append(&quot;//&quot;);</span>
             }
 
-<span class="fc" id="L297">            builder.append(host);</span>
+<span class="fc" id="L312">            builder.append(host);</span>
 
-<span class="fc bfc" id="L299" title="All 2 branches covered.">            if (port &gt; 0) {</span>
-<span class="fc" id="L300">                builder.append(':');</span>
-<span class="fc" id="L301">                builder.append(port);</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">            if (port &gt; 0) {</span>
+<span class="fc" id="L315">                builder.append(':');</span>
+<span class="fc" id="L316">                builder.append(port);</span>
             }
         }
 
-<span class="fc" id="L305">        return builder.toString();</span>
+<span class="fc" id="L320">        return builder.toString();</span>
     }
 
     private String buildQueryString() {
-<span class="fc" id="L309">        String queryString = null;</span>
+<span class="fc" id="L324">        String queryString = null;</span>
 
-<span class="fc bfc" id="L311" title="All 2 branches covered.">        if (!parameters.isEmpty()) {</span>
-<span class="fc" id="L312">            final StringBuilder builder = new StringBuilder(&quot;?&quot;);</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">        if (!parameters.isEmpty()) {</span>
+<span class="fc" id="L327">            final StringBuilder builder = new StringBuilder(&quot;?&quot;);</span>
 
-<span class="fc" id="L314">            parameters.keySet().forEach(name -&gt; {</span>
-<span class="fc" id="L315">                parameters.get(name).forEach(value -&gt; {</span>
-                    try {
-<span class="fc" id="L317">                        builder.append(URLEncoder.encode(name, StandardCharsets.UTF_8.name()));</span>
-<span class="fc" id="L318">                        builder.append('=');</span>
-<span class="fc" id="L319">                        builder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));</span>
-<span class="pc" id="L320">                    } catch (UnsupportedEncodingException uee) {</span>
-<span class="nc" id="L321">                        LOG.error(&quot;invalid encoding for parameter :&quot; + name + &quot;=&quot; + value, uee);</span>
-                    }
+<span class="fc" id="L329">            parameters.keySet().forEach(name -&gt; parameters.get(name).forEach(value -&gt; {</span>
+                try {
+<span class="fc" id="L331">                    builder.append(URLEncoder.encode(name, StandardCharsets.UTF_8.name()));</span>
+<span class="fc" id="L332">                    builder.append('=');</span>
+<span class="fc" id="L333">                    builder.append(URLEncoder.encode(value, StandardCharsets.UTF_8.name()));</span>
+<span class="pc" id="L334">                } catch (UnsupportedEncodingException uee) {</span>
+<span class="nc" id="L335">                    LOG.error(&quot;invalid encoding for parameter :&quot; + name + &quot;=&quot; + value, uee);</span>
+                }
 
-<span class="fc" id="L324">                    builder.append('&amp;');</span>
-<span class="fc" id="L325">                });</span>
-<span class="fc" id="L326">            });</span>
+<span class="fc" id="L338">                builder.append('&amp;');</span>
+<span class="fc" id="L339">            }));</span>
 
-<span class="fc" id="L328">            builder.deleteCharAt(builder.length() - 1);</span>
+<span class="fc" id="L341">            builder.deleteCharAt(builder.length() - 1);</span>
 
-<span class="fc" id="L330">            queryString = builder.toString();</span>
+<span class="fc" id="L343">            queryString = builder.toString();</span>
         }
 
-<span class="fc" id="L333">        return queryString;</span>
+<span class="fc" id="L346">        return queryString;</span>
     }
 
     private String buildSelectors() {
-<span class="fc" id="L337">        final StringBuilder builder = new StringBuilder();</span>
+<span class="fc" id="L350">        final StringBuilder builder = new StringBuilder();</span>
 
-<span class="fc bfc" id="L339" title="All 2 branches covered.">        if (!external) {</span>
-<span class="fc" id="L340">            selectors.forEach(selector -&gt; {</span>
-<span class="fc" id="L341">                builder.append('.');</span>
-<span class="fc" id="L342">                builder.append(selector);</span>
-<span class="fc" id="L343">            });</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        if (!external) {</span>
+<span class="fc" id="L353">            selectors.forEach(selector -&gt; {</span>
+<span class="fc" id="L354">                builder.append('.');</span>
+<span class="fc" id="L355">                builder.append(selector);</span>
+<span class="fc" id="L356">            });</span>
         }
 
-<span class="fc" id="L346">        return builder.toString();</span>
+<span class="fc" id="L359">        return builder.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
