@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.cid15.aem.veneer</groupId>
         <artifactId>veneer</artifactId>
-        <version>0.4.0</version>
+        <version>0.5.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -169,11 +169,10 @@
             <artifactId>prosper</artifactId>
         </dependency>
 
-        <!-- uber jar last to allow overrides for newer dependency versions -->
+        <!-- SDK API jar last to allow overrides for newer dependency versions -->
         <dependency>
             <groupId>com.adobe.aem</groupId>
-            <artifactId>uber-jar</artifactId>
-            <classifier>apis</classifier>
+            <artifactId>aem-sdk-api</artifactId>
         </dependency>
     </dependencies>
 </project>

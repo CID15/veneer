@@ -41,21 +41,36 @@ class DefaultLinkBuilderSpec extends VeneerSpec {
         !link.extension.present
     }
 
-    def "build link for mapped page"() {
+    def "build link for resource resolver mapped page"() {
         setup:
         def link = new DefaultLinkBuilder(path)
-            .mapped(mapped ? resourceResolver : null)
+            .mapped(resourceResolver)
             .build()
 
         expect:
         link.href == mappedHref
 
         where:
-        path              | mappedHref             | mapped
-        "/content/us"     | "/us.html"             | true
-        "/content/us"     | "/content/us.html"     | false
-        "/content/global" | "/global.html"         | true
-        "/content/global" | "/content/global.html" | false
+        path              | mappedHref
+        "/content/us"     | "/us.html"
+        "/content/global" | "/global.html"
+    }
+
+    def "build link for request mapped page"() {
+        setup:
+        def request = requestBuilder.build()
+
+        def link = new DefaultLinkBuilder(path)
+            .mapped(request)
+            .build()
+
+        expect:
+        link.href == mappedHref
+
+        where:
+        path              | mappedHref
+        "/content/us"     | "/us.html"
+        "/content/global" | "/global.html"
     }
 
     def "build link with selector in path"() {

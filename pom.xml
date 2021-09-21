@@ -1,10 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.cid15.aem.veneer</groupId>
     <artifactId>veneer</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
     <name>Veneer</name>
     <description>
         Veneer provides a set of enhancements to the Adobe Experience Manager WCM foundation APIs and
@@ -70,6 +72,8 @@
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
         <aem.username>admin</aem.username>
+
+        <aem.sdk.api.version>2021.9.5852.20210917T073206Z-210800</aem.sdk.api.version>
 
         <!-- slf4j dependencies will be used elsewhere (i.e. tests), use version property for consistency -->
         <slf4j.version>1.7.25</slf4j.version>
@@ -479,12 +483,11 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- uber jar is listed last so that newer APIs above can override dependencies provided in this jar -->
+            <!-- SDK API jar is listed last so that newer APIs above can override dependencies provided in this jar -->
             <dependency>
                 <groupId>com.adobe.aem</groupId>
-                <artifactId>uber-jar</artifactId>
-                <version>6.5.4</version>
-                <classifier>apis</classifier>
+                <artifactId>aem-sdk-api</artifactId>
+                <version>${aem.sdk.api.version}</version>
                 <scope>provided</scope>
             </dependency>
         </dependencies>

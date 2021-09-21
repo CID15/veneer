@@ -1,6 +1,7 @@
 package org.cid15.aem.veneer.api.link.builders;
 
 import com.google.common.collect.SetMultimap;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.cid15.aem.veneer.api.link.Link;
 
@@ -18,6 +19,14 @@ public interface LinkBuilder {
      * @return link
      */
     Link build();
+
+    /**
+     * Use the given request (and underlying resource resolver) to map the link path.
+     *
+     * @param request request
+     * @return builder
+     */
+    LinkBuilder mapped(SlingHttpServletRequest request);
 
     /**
      * Use the given resource resolver to map the link path.
