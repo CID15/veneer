@@ -143,11 +143,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- uber jar last to allow overrides for newer dependency versions -->
+        <!-- SDK API jar last to allow overrides for newer dependency versions -->
         <dependency>
             <groupId>com.adobe.aem</groupId>
-            <artifactId>uber-jar</artifactId>
-            <classifier>apis</classifier>
+            <artifactId>aem-sdk-api</artifactId>
         </dependency>
     </dependencies>
 </project>
