@@ -141,18 +141,14 @@ class AccessibleSpec extends AbstractVeneeredResourceSpec {
 
     def "get as link builder"() {
         setup:
-        def link = getVeneeredResource("/content/cid15/jcr:content").getAsLinkBuilder("otherPagePath")
-            .map { builder -> builder.mapped(mapped ? resourceResolver : null).build() }
+        def link = getVeneeredResource("/content/cid15/jcr:content")
+            .getAsLinkBuilder("otherPagePath")
             .get()
+            .build()
 
         expect:
         link.path == "/content/ales/esb"
-        link.href == href
-
-        where:
-        mapped | href
-        false  | "/content/ales/esb.html"
-        true   | "/ales/esb.html"
+        link.href == "/content/ales/esb.html"
     }
 
     def "get as page"() {

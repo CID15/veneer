@@ -4,6 +4,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.cid15.aem.veneer.api.constants.PathConstants;
 import org.cid15.aem.veneer.api.link.Link;
@@ -40,6 +41,8 @@ public final class DefaultLinkBuilder implements LinkBuilder {
     private final List<Link> children = new ArrayList<>();
 
     // mutable properties
+
+    private SlingHttpServletRequest request;
 
     private ResourceResolver resourceResolver;
 
@@ -79,7 +82,7 @@ public final class DefaultLinkBuilder implements LinkBuilder {
     public Link build() {
         final StringBuilder builder = new StringBuilder().append(buildHost());
 
-        final StringBuilder mappable = new StringBuilder()
+        final StringBuilder mappablePath = new StringBuilder()
             .append(path)
             .append(buildSelectors());
 
@@ -92,16 +95,12 @@ public final class DefaultLinkBuilder implements LinkBuilder {
                 extension = Optional.ofNullable(this.extension).orElse(PathConstants.EXTENSION_HTML);
 
                 if (StringUtils.isNotEmpty(extension)) {
-                    mappable.append('.').append(extension);
+                    mappablePath.append('.').append(extension);
                 }
             }
         }
 
-        if (resourceResolver != null) {
-            builder.append(resourceResolver.map(mappable.toString()));
-        } else {
-            builder.append(mappable);
-        }
+        builder.append(getMappedPath(mappablePath.toString()));
 
         if (suffix != null) {
             builder.append(suffix);
@@ -126,6 +125,13 @@ public final class DefaultLinkBuilder implements LinkBuilder {
         LOG.debug("returning link : {}", link);
 
         return link;
+    }
+
+    @Override
+    public LinkBuilder mapped(final SlingHttpServletRequest request) {
+        this.request = request;
+
+        return this;
     }
 
     @Override
@@ -283,6 +289,20 @@ public final class DefaultLinkBuilder implements LinkBuilder {
     }
 
     // internals
+
+    private String getMappedPath(final String path) {
+        final String mappedPath;
+
+        if (request != null) {
+            mappedPath = request.getResourceResolver().map(request, path);
+        } else if (resourceResolver != null) {
+            mappedPath = resourceResolver.map(path);
+        } else {
+            mappedPath = path;
+        }
+
+        return mappedPath;
+    }
 
     private String buildHost() {
         final StringBuilder builder = new StringBuilder();
