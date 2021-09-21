@@ -6,7 +6,7 @@
     <groupId>org.cid15.aem.veneer</groupId>
     <artifactId>veneer</artifactId>
     <packaging>pom</packaging>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0</version>
     <name>Veneer</name>
     <description>
         Veneer provides a set of enhancements to the Adobe Experience Manager WCM foundation APIs and
