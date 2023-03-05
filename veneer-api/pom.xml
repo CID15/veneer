@@ -23,7 +23,8 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-Vendor>${project.parent.organization.name}</Bundle-Vendor>
-                        <Export-Package>org.cid15.aem.veneer.api.*</Export-Package>
+                        <Export-Package>org.cid15.aem.veneer.api.*,veneer.*</Export-Package>
+                        <Import-Package>*,!com.google.common.*,!com.google.thirdparty.*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
