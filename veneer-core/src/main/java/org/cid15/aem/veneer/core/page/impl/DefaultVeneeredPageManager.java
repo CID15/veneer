@@ -5,7 +5,7 @@ import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.tagging.TagManager;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
-import com.google.common.base.Stopwatch;
+import veneer.com.google.common.base.Stopwatch;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.cid15.aem.veneer.api.page.VeneeredPage;
@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static veneer.com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public final class DefaultVeneeredPageManager implements VeneeredPageManager {

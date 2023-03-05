@@ -4,7 +4,7 @@ import org.cid15.aem.veneer.api.resource.VeneeredResource;
 
 import java.util.function.Predicate;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static veneer.com.google.common.base.Preconditions.checkNotNull;
 
 public final class VeneeredResourcePropertyExistsPredicate implements Predicate<VeneeredResource> {
 

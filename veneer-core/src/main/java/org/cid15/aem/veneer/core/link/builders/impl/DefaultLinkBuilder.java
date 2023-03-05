@@ -1,8 +1,8 @@
 package org.cid15.aem.veneer.core.link.builders.impl;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
+import veneer.com.google.common.collect.LinkedHashMultimap;
+import veneer.com.google.common.collect.Multimaps;
+import veneer.com.google.common.collect.SetMultimap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static veneer.com.google.common.base.Preconditions.checkNotNull;
 
 public final class DefaultLinkBuilder implements LinkBuilder {
 

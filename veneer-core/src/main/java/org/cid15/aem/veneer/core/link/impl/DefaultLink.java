@@ -1,6 +1,6 @@
 package org.cid15.aem.veneer.core.link.impl;
 
-import com.google.common.base.Objects;
+import veneer.com.google.common.base.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.cid15.aem.veneer.api.link.Link;

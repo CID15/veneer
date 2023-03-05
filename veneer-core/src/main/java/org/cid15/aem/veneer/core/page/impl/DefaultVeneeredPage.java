@@ -6,7 +6,7 @@ import com.day.cq.tagging.Tag;
 import com.day.cq.wcm.api.NameConstants;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.commons.DeepResourceIterator;
-import com.google.common.base.Objects;
+import veneer.com.google.common.base.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.sling.api.adapter.SlingAdaptable;
