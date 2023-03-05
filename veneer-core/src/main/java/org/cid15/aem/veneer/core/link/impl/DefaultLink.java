@@ -1,6 +1,6 @@
 package org.cid15.aem.veneer.core.link.impl;
 
-import veneer.com.google.common.base.Objects;
+import veneer.com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.cid15.aem.veneer.api.link.Link;
@@ -142,7 +142,7 @@ public final class DefaultLink implements Link {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
             .add("path", path)
             .add("selectors", selectors)
             .add("extension", extension)

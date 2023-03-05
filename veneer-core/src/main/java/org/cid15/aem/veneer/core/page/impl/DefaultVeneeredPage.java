@@ -6,7 +6,7 @@ import com.day.cq.tagging.Tag;
 import com.day.cq.wcm.api.NameConstants;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.commons.DeepResourceIterator;
-import veneer.com.google.common.base.Objects;
+import veneer.com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.sling.api.adapter.SlingAdaptable;
@@ -62,7 +62,7 @@ public final class DefaultVeneeredPage extends SlingAdaptable implements Veneere
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
             .add("path", delegate.getPath())
             .add("title", delegate.getTitle())
             .toString();

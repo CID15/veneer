@@ -11,7 +11,7 @@ import com.day.cq.tagging.TagManager;
 import com.day.cq.wcm.api.NameConstants;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.foundation.Image;
-import veneer.com.google.common.base.Objects;
+import veneer.com.google.common.base.MoreObjects;
 import veneer.com.google.common.collect.Lists;
 import veneer.com.google.common.collect.Maps;
 import veneer.com.google.common.collect.ObjectArrays;
@@ -88,7 +88,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
             .add("path", getPath())
             .add("properties", Maps.newHashMap(getProperties()))
             .toString();
