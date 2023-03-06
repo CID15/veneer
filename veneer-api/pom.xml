@@ -17,56 +17,41 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.8</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-Vendor>${project.parent.organization.name}</Bundle-Vendor>
-                        <Export-Package>org.cid15.aem.veneer.api.*,veneer.*</Export-Package>
-                        <Import-Package>*,!com.google.common.*,!com.google.thirdparty.*</Import-Package>
+                        <Export-Package>
+                            org.cid15.aem.veneer.api.*,
+                            veneer.com.google.common.annotations,
+                            veneer.com.google.common.base,
+                            veneer.com.google.common.cache,
+                            veneer.com.google.common.collect,
+                            veneer.com.google.common.escape,
+                            veneer.com.google.common.eventbus,
+                            veneer.com.google.common.graph,
+                            veneer.com.google.common.hash,
+                            veneer.com.google.common.html,
+                            veneer.com.google.common.io,
+                            veneer.com.google.common.math,
+                            veneer.com.google.common.net,
+                            veneer.com.google.common.primitives,
+                            veneer.com.google.common.reflect,
+                            veneer.com.google.common.util.concurrent,
+                            veneer.com.google.common.xml,
+                            veneer.com.google.thirdparty.publicsuffix
+                        </Export-Package>
+                        <Import-Package>!com.google.*,!org.checkerframework.*,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <generateReports>false</generateReports>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce-banned-dependencies</id>
-                        <configuration>
-                            <rules>
-                                <bannedDependencies>
-                                    <!-- here we need to explicitly list the set of dependencies which 
-                                    are allowed with scope=compile -->
-                                    <includes>
-                                        <include>com.google.guava:*</include>
-                                    </includes>
-                                </bannedDependencies>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -100,6 +85,41 @@
                                     </includes>
                                 </filter>
                             </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <generateReports>false</generateReports>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-banned-dependencies</id>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <!-- here we need to explicitly list the set of dependencies which 
+                                    are allowed with scope=compile -->
+                                    <includes>
+                                        <include>com.google.guava:*</include>
+                                    </includes>
+                                </bannedDependencies>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
