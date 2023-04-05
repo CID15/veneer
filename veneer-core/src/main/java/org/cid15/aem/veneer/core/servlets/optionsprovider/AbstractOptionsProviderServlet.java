@@ -1,6 +1,6 @@
 package org.cid15.aem.veneer.core.servlets.optionsprovider;
 
-import com.google.common.collect.ImmutableMap;
+import veneer.com.google.common.collect.ImmutableMap;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.cid15.aem.veneer.core.servlets.AbstractJsonResponseServlet;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static veneer.com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Base class for providing a list of "options" to a component dialog widget.  An option is simply a text/value pair to

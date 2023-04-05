@@ -11,10 +11,10 @@ import com.day.cq.tagging.TagManager;
 import com.day.cq.wcm.api.NameConstants;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.foundation.Image;
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.ObjectArrays;
+import veneer.com.google.common.base.MoreObjects;
+import veneer.com.google.common.collect.Lists;
+import veneer.com.google.common.collect.Maps;
+import veneer.com.google.common.collect.ObjectArrays;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -42,7 +42,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static veneer.com.google.common.base.Preconditions.checkNotNull;
 
 @Model(adaptables = Resource.class, adapters = VeneeredResource.class)
 public final class DefaultVeneeredResource implements VeneeredResource {
@@ -88,7 +88,7 @@ public final class DefaultVeneeredResource implements VeneeredResource {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
             .add("path", getPath())
             .add("properties", Maps.newHashMap(getProperties()))
             .toString();

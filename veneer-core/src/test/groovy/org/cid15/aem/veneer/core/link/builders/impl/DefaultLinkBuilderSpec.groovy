@@ -1,7 +1,7 @@
 package org.cid15.aem.veneer.core.link.builders.impl
 
-import com.google.common.collect.LinkedHashMultimap
-import com.google.common.collect.SetMultimap
+import veneer.com.google.common.collect.LinkedHashMultimap
+import veneer.com.google.common.collect.SetMultimap
 import io.wcm.testing.mock.aem.junit.AemContext
 import io.wcm.testing.mock.aem.junit.AemContextBuilder
 import org.apache.sling.testing.mock.sling.ResourceResolverType

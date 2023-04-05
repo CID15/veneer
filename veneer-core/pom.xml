@@ -25,6 +25,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Export-Package>!*.impl,org.cid15.aem.veneer.core.*</Export-Package>
+                        <Import-Package>!com.google.common.*,!com.google.errorprone.annotations.*,!com.google.thirdparty.*,*</Import-Package>
                         <Sling-Model-Packages>org.cid15.aem.veneer.core</Sling-Model-Packages>
                     </instructions>
                 </configuration>

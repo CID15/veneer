@@ -4,7 +4,7 @@ import org.cid15.aem.veneer.api.page.VeneeredPage;
 
 import java.util.function.Predicate;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static veneer.com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Predicate that filters on the value of the page's cq:template property.

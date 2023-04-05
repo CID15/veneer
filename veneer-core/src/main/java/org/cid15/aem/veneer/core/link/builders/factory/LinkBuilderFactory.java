@@ -13,7 +13,7 @@ import org.cid15.aem.veneer.core.link.builders.impl.DefaultLinkBuilder;
 
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static veneer.com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Factory for acquiring <code>LinkBuilder</code> instances.
